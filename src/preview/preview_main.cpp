@@ -121,7 +121,9 @@ static void baseVm(ui::ViewModel& vm) {
 
 int main(int argc, char** argv) {
   if (argc > 1) g_out = argv[1];
-  mkdir(g_out.c_str(), 0755);
+  // mkdir -p
+  for (size_t i = 1; i <= g_out.size(); i++)
+    if (i == g_out.size() || g_out[i] == '/') mkdir(g_out.substr(0, i).c_str(), 0755);
   setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);
   tzset();
 
