@@ -16,11 +16,11 @@ namespace core {
 #define CORE_I18N_TABLE(X) \
   X(Starting,          "Startet …",                                   "Starting…") \
   X(WelcomeTitle,      "Willkommen!",                                  "Welcome!") \
-  X(SetupStep1,        "Mit dem Handy diesen Code scannen",            "Scan this code with your phone") \
-  X(SetupStep1b,       "oder WLAN „%s“ wählen",                        "or join the Wi-Fi “%s”") \
-  X(SetupStep2,        "Einrichtungsseite öffnet sich",                "The setup page opens") \
-  X(SetupStep3,        "Heim-WLAN wählen, fertig",                     "Pick your home Wi-Fi, done") \
-  X(SetupNoPage,       "Seite öffnet nicht? http://%s",                "Page not opening? http://%s") \
+  X(SetupStep1,        "Code mit dem Handy scannen",                   "Scan the code with your phone") \
+  X(SetupStep2,        "Seite öffnet sich",                            "Setup page opens") \
+  X(SetupStep3,        "WLAN wählen – fertig!",                        "Pick your Wi-Fi – done!") \
+  X(SetupOpenNet,      "kein Passwort",                                "no password") \
+  X(SetupNoPage,       "Seite öffnet nicht? %s",                       "Page not opening? %s") \
   X(ConnectingTitle,   "Verbinde …",                                   "Connecting…") \
   X(ConnectingBody,    "mit „%s“",                                     "to “%s”") \
   X(NoWifiTitle,       "Kein WLAN",                                    "No Wi-Fi") \

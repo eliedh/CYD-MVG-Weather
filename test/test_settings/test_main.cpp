@@ -132,7 +132,8 @@ void test_night_window() {
 void test_default_label() {
   TEST_ASSERT_EQUAL_STRING("Marienplatz", defaultStopLabel("München, Marienplatz").c_str());
   std::string l = defaultStopLabel("Garching, Forschungszentrum");
-  TEST_ASSERT_TRUE(l.size() <= 14);
+  TEST_ASSERT_TRUE(l.size() <= 24);
+  TEST_ASSERT_EQUAL_STRING("Münchner Freiheit", defaultStopLabel("Münchner Freiheit").c_str());
   TEST_ASSERT_EQUAL_STRING("Garching", l.c_str());
 }
 

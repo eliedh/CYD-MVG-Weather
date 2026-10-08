@@ -175,9 +175,9 @@ std::string defaultStopLabel(const std::string& name) {
   // "Gauting, Bahnhof" -> "Gauting" when too long for the board.
   size_t comma = n.find(", ");
   if (n.size() > 14 && comma != std::string::npos && comma >= 3) n.resize(comma);
-  // Keep at most 14 bytes, cut at a UTF-8 boundary.
-  if (n.size() > 14) {
-    size_t cut = 14;
+  // Hard limit (the board ellipsizes visually anyway), cut at a UTF-8 boundary.
+  if (n.size() > 24) {
+    size_t cut = 24;
     while (cut > 0 && (n[cut] & 0xC0) == 0x80) cut--;
     n.resize(cut);
     while (!n.empty() && (n.back() == ' ' || n.back() == '-' || n.back() == ',')) n.pop_back();
