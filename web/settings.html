@@ -143,6 +143,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <button class="btn ghost wide" onclick="confirmPost('/api/forget-wifi','confirmWifi','wifiReset')" data-t="changeWifi"></button>
     <button class="btn danger wide" onclick="confirmPost('/api/reset','confirmReset','resetDone')" data-t="factoryReset"></button>
     <dl class="kv" id="info"></dl>
+    <p class="muted" style="margin:0;font-size:13px" data-t="sources"></p>
   </div>
 </main>
 <div class="savebar" id="savebar"><button class="btn" onclick="save()" data-t="save"></button></div>
@@ -163,7 +164,7 @@ system:"System",calibrate:"Touch kalibrieren",changeWifi:"WLAN ändern",factoryR
 calStarted:"Folge den Anweisungen auf der Tafel.",confirmWifi:"WLAN-Daten löschen? Die Tafel startet neu und öffnet wieder den Einrichtungs-Hotspot.",
 wifiReset:"Die Tafel startet den Einrichtungs-Hotspot.",confirmReset:"Wirklich alles zurücksetzen? Haltestellen, Einstellungen und WLAN werden gelöscht.",resetDone:"Zurückgesetzt. Die Tafel startet neu.",
 save:"Änderungen speichern",saved:"Gespeichert ✓",saveError:"Speichern fehlgeschlagen.",
-online:"Online",updated:"aktualisiert {t}",apiErr:"MVG gerade nicht erreichbar",version:"Firmware",ip:"IP-Adresse",signal:"WLAN-Signal",heap:"Freier Speicher",uptime:"Laufzeit",offline:"Keine Verbindung zur Tafel"},
+online:"Online",updated:"aktualisiert {t}",apiErr:"MVG gerade nicht erreichbar",version:"Firmware",ip:"IP-Adresse",signal:"WLAN-Signal",heap:"Freier Speicher",uptime:"Laufzeit",offline:"Keine Verbindung zur Tafel",sources:"Abfahrten: MVG (inoffizielle Schnittstelle) · Wetter: Open-Meteo.com (CC BY 4.0)"},
 en:{stops:"Stops",addStop:"Add a stop",searchPh:"e.g. Marienplatz",search:"Search",searching:"Searching…",noResults:"Nothing found.",
 searchError:"Search failed. Is the board online?",maxStops:"Up to 4 stops.",noStops:"No stops yet. Search for your stop below.",
 walk:"Walking time",min:"min",shortName:"Short name",remove:"Remove",linesDirs:"Lines & directions",hiddenN:"{n} hidden",allShown:"all shown",
@@ -178,7 +179,7 @@ system:"System",calibrate:"Calibrate touch",changeWifi:"Change Wi-Fi",factoryRes
 calStarted:"Follow the instructions on the board.",confirmWifi:"Forget the Wi-Fi? The board restarts and opens the setup hotspot again.",
 wifiReset:"The board is starting the setup hotspot.",confirmReset:"Really reset everything? Stops, settings and Wi-Fi will be erased.",resetDone:"Reset done. The board restarts.",
 save:"Save changes",saved:"Saved ✓",saveError:"Saving failed.",
-online:"Online",updated:"updated {t}",apiErr:"MVG is unreachable right now",version:"Firmware",ip:"IP address",signal:"Wi-Fi signal",heap:"Free memory",uptime:"Uptime",offline:"Can’t reach the board"}};
+online:"Online",updated:"updated {t}",apiErr:"MVG is unreachable right now",version:"Firmware",ip:"IP address",signal:"Wi-Fi signal",heap:"Free memory",uptime:"Uptime",offline:"Can’t reach the board",sources:"Departures: MVG (unofficial API) · Weather: Open-Meteo.com (CC BY 4.0)"}};
 const TYPES=["UBAHN","SBAHN","TRAM","BUS","REGIONAL_BUS","BAHN"];
 const UC={U1:"#438136",U2:"#C40C37",U3:"#F36E31",U4:"#0AB38D",U5:"#B8740E",U6:"#006CB3",U7:"#438136,#C40C37",U8:"#C40C37,#F36E31"};
 const SC={S1:"#16BAE7",S2:"#76B82A",S3:"#951B81",S4:"#E30613",S5:"#005E82",S6:"#00975F",S7:"#943126",S8:"#1A1A1A",S20:"#F05A73",S27:"#F05A73"};
