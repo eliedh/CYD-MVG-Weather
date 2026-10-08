@@ -129,8 +129,13 @@ void routes() {
     if (viaHotspot(r)) sendGz(r, WEB_SETUP_GZ, WEB_SETUP_GZ_LEN);
     else sendGz(r, WEB_SETTINGS_GZ, WEB_SETTINGS_GZ_LEN);
   });
-  server.on("/setup", HTTP_GET,
-            [](AsyncWebServerRequest* r) { sendGz(r, WEB_SETUP_GZ, WEB_SETUP_GZ_LEN); });
+  // The Wi-Fi setup page only makes sense over the hotspot. On the home
+  // network, Wi-Fi is changed via "Change Wi-Fi" on the settings page
+  // (restarts into the hotspot), so /setup leads there instead.
+  server.on("/setup", HTTP_GET, [](AsyncWebServerRequest* r) {
+    if (viaHotspot(r)) sendGz(r, WEB_SETUP_GZ, WEB_SETUP_GZ_LEN);
+    else r->redirect("/");
+  });
   server.on("/settings", HTTP_GET,
             [](AsyncWebServerRequest* r) { sendGz(r, WEB_SETTINGS_GZ, WEB_SETTINGS_GZ_LEN); });
 
@@ -166,6 +171,7 @@ void routes() {
   server.on(
       "/api/wifi", HTTP_POST,
       [](AsyncWebServerRequest* r) {
+        if (!viaHotspot(r)) return sendErr(r, 403, "only via the setup hotspot");
         JsonDocument d;
         if (!body(r) || deserializeJson(d, body(r))) return sendErr(r, 400, "bad json");
         const char* ssid = d["ssid"] | "";

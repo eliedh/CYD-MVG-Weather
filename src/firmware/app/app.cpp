@@ -23,7 +23,7 @@ namespace {
 
 using ui::Screen;
 
-enum class Overlay : uint8_t { None, Weather, Message, SettingsQR };
+enum class Overlay : uint8_t { None, Weather, Message, SettingsQR, ResetConfirm };
 
 constexpr uint32_t kDetailTimeoutMs = 30 * 1000;
 constexpr uint32_t kQrTimeoutMs = 90 * 1000;
@@ -109,6 +109,7 @@ Screen baseScreen() {
 
 Screen currentScreen() {
   Screen base = baseScreen();
+  if (overlay == Overlay::ResetConfirm) return Screen::ResetConfirm;
   if (overlay == Overlay::SettingsQR && net == NetState::Online) return Screen::SettingsQR;
   if (base != Screen::Main) return base;
   if (overlay == Overlay::Weather) return Screen::WeatherDetail;
@@ -118,7 +119,9 @@ Screen currentScreen() {
 
 void openOverlay(Overlay o) {
   overlay = o;
-  overlayDeadline = millis() + (o == Overlay::SettingsQR ? kQrTimeoutMs : kDetailTimeoutMs);
+  overlayDeadline = millis() + (o == Overlay::SettingsQR || o == Overlay::ResetConfirm
+                                    ? kQrTimeoutMs
+                                    : kDetailTimeoutMs);
 }
 
 // ------------------------------------------------------------------ rendering
@@ -172,6 +175,10 @@ void runCalibration() {
 
 [[noreturn]] void factoryReset() {
   LOGI("factory reset");
+  {
+    SharedLock l;
+    g.shuttingDown = true;  // net task stops touching Wi-Fi/NVS
+  }
   hw::setBacklightTarget(200);
   showNotice(core::tr(core::Str::ResetDone, settings.lang), nullptr, 1500);
   storage::factoryReset();
@@ -255,7 +262,10 @@ void handleTouch(Screen screen) {
   if (isNightNow()) wakeUntil = millis() + kNightWakeMs;  // keep awake while used
 
   if (t.event == hw::TouchEvent::LongPress) {
-    if (screen == Screen::NoWifi) {
+    if (screen == Screen::ResetConfirm) {
+      // Erasing needs a deliberate press-and-hold on the "Erase" button.
+      if (ui::hitTestResetConfirm(t.x, t.y) == ui::HitZone::Erase) factoryReset();
+    } else if (screen == Screen::NoWifi) {
       SharedLock l;
       g.reqOpenPortal = true;
     } else if (net == NetState::Online) {
@@ -291,8 +301,17 @@ void handleTouch(Screen screen) {
       break;
     }
     case Screen::WeatherDetail:
-    case Screen::SettingsQR:
       overlay = Overlay::None;
+      break;
+    case Screen::SettingsQR:
+      if (ui::hitTestSettingsQR(t.x, t.y) == ui::HitZone::ResetButton)
+        openOverlay(Overlay::ResetConfirm);
+      else overlay = Overlay::None;
+      break;
+    case Screen::ResetConfirm:
+      // A tap on "Erase" only keeps the hint visible; Cancel closes.
+      if (ui::hitTestResetConfirm(t.x, t.y) == ui::HitZone::Cancel) overlay = Overlay::None;
+      else overlayDeadline = millis() + kQrTimeoutMs;
       break;
     default:
       break;

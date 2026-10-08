@@ -69,6 +69,7 @@ struct Shared {
   bool reqForgetWifi = false;
   bool reqOpenPortal = false;
   bool reqRefresh = false;
+  bool shuttingDown = false;  // factory reset in progress: net task goes idle
 
   Job jobs[kMaxJobs];
   uint32_t nextJobId = 1;

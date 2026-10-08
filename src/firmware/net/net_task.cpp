@@ -498,6 +498,15 @@ void task(void*) {
 
   bool fetchedOnce = false;
   for (;;) {
+    bool stop;
+    {
+      SharedLock l;
+      stop = g.shuttingDown;
+    }
+    if (stop) {  // factory reset: leave Wi-Fi/NVS alone until the restart
+      vTaskDelay(pdMS_TO_TICKS(200));
+      continue;
+    }
     wifiLoop();
     uint32_t now = millis();
     bool timeOk = clockValid();

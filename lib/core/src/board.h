@@ -14,6 +14,7 @@ struct BoardRow {
   Departure dep;
   int32_t secondsUntil = 0;  // until (real-time) departure
   int16_t minutes = 0;       // floor(secondsUntil / 60), >= 0
+  bool reachable = true;     // false: leaves before you could walk there
   bool highlight = false;    // the next departure you can still catch
   int16_t leaveInMin = -1;   // minutes until you must leave (only if walk > 0)
   uint8_t walkMin = 0;
@@ -22,8 +23,13 @@ struct BoardRow {
 // True if the stop's transport-type mask or line/direction excludes hide `d`.
 bool isFilteredOut(const StopConfig& stop, const Departure& d);
 
-// Builds the merged board. Departures you cannot reach anymore
-// (secondsUntil < walk time) or that have already left are dropped.
+// At most this many unreachable departures are kept on the board (the ones
+// closest to still being catchable), so they never crowd out catchable ones.
+constexpr int kMaxUnreachableRows = 2;
+
+// Builds the merged board. Departures that already left are dropped.
+// Departures you cannot reach anymore (secondsUntil < walk time) are kept
+// with reachable=false (shown greyed out), limited to kMaxUnreachableRows.
 // Rows are sorted by effective departure time. Returns number of rows.
 int buildBoard(const StopDepartures* stops, const Settings& s, int64_t now, BoardRow* out,
                int maxRows);

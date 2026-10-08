@@ -52,9 +52,13 @@ Consequences:
 
 - **Merged list** of all stops, sorted by real-time departure (scheduled if no
   real-time). Ties: stop order, then line label. Exact duplicates removed.
-- **Reachability**: a departure is shown only if `seconds until departure ≥
-  walking time`. Departures that already left are hidden (no grace period).
-- **Next catchable** = first non-cancelled row; highlighted with a lighter row
+- **Reachability**: departures that leave before you could walk to the stop
+  (`seconds until departure < walking time`) are **shown greyed out**
+  (muted badge, text, minutes and real-time dot) instead of hidden. To keep
+  catchable departures on screen, at most **2** such rows are kept overall
+  (`kMaxUnreachableRows`) – the ones closest to still being catchable.
+  Departures that already left are hidden (no grace period).
+- **Next catchable** = first reachable, non-cancelled row; highlighted with a lighter row
   background. "leave in N min" / "in N Min. losgehen" is shown only if that
   stop has a walking time > 0 (otherwise it would just repeat the countdown);
   0 → "leave now".
@@ -177,8 +181,17 @@ Consequences:
 - The settings page posts the whole document; unknown keys are ignored and the
   touch calibration cannot be overwritten through the API.
 - Saving is debounced (1.5 s) and done by the UI loop.
-- Factory reset (settings page or BOOT 10 s) clears the NVS namespace and the
-  core's Wi-Fi store, then restarts.
+- **Factory reset ("erase everything")** – from the settings page, BOOT 10 s,
+  or on the device (long-press → *Reset…* → press-and-hold *Erase*; two
+  deliberate steps so it cannot happen by accident). It clears our namespace,
+  the Wi-Fi driver's credentials, stops the Wi-Fi driver and erases the whole
+  NVS partition, then restarts into the setup hotspot like a new unit. The net
+  task is parked first so it does not touch Wi-Fi/NVS during the erase.
+- **Wi-Fi setup page only over the hotspot**: on the home network `/setup`
+  redirects to the settings page and `/api/wifi` is refused (403). Changing
+  networks from the home network cannot be confirmed safely (the phone loses
+  the device mid-switch) and previously would not have saved the new
+  credentials. *Change Wi-Fi* restarts into the hotspot instead.
 
 ## 9. Build & CI
 

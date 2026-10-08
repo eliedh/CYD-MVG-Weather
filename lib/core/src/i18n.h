@@ -56,6 +56,12 @@ namespace core {
   X(TapNext,           "Tippen für mehr",                              "Tap for more") \
   X(ResetHold,         "Halten zum Zurücksetzen … %d",                 "Keep holding to reset… %d") \
   X(ResetRelease,      "Jetzt loslassen: Touch kalibrieren",           "Release now: calibrate touch") \
+  X(ResetButton,       "Zurücksetzen …",                               "Reset…") \
+  X(ResetAskTitle,     "Alles zurücksetzen?",                          "Reset everything?") \
+  X(ResetAskBody,      "WLAN, Haltestellen und alle Einstellungen werden gelöscht. Danach startet die Einrichtung neu.", "Wi-Fi, stops and all settings will be erased. Setup then starts again.") \
+  X(Cancel,            "Abbrechen",                                    "Cancel") \
+  X(Erase,             "Löschen",                                      "Erase") \
+  X(HoldToErase,       "Zum Löschen „Löschen“ gedrückt halten",        "Press and hold “Erase” to erase") \
   X(ResetDone,         "Zurückgesetzt. Neustart …",                    "Reset done. Restarting…") \
   X(CalTitle,          "Touch kalibrieren",                            "Calibrate touch") \
   X(CalBody,           "Tippe genau auf die Pfeilspitze in jeder Ecke.", "Tap exactly on the arrow tip in each corner.") \

@@ -12,8 +12,10 @@ void drawScreen(Painter& p, const ViewModel& vm);
 bool mainHasBanner(const ViewModel& vm);
 int mainVisibleRows(const ViewModel& vm);
 
-enum class HitZone : uint8_t { None, Header, Banner, Body };
+enum class HitZone : uint8_t { None, Header, Banner, Body, ResetButton, Cancel, Erase };
 HitZone hitTestMain(const ViewModel& vm, int x, int y);
+HitZone hitTestSettingsQR(int x, int y);    // ResetButton or None
+HitZone hitTestResetConfirm(int x, int y);  // Cancel, Erase or None
 
 // Number of pages the current message needs (uses `measure` for text widths).
 int messagePageCount(lgfx::LovyanGFX& measure, const ViewModel& vm);

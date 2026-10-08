@@ -37,9 +37,10 @@
 | **Grün** · **green** | „in 3 Min. losgehen“ – die nächste erreichbare Abfahrt | “leave in 3 min” – the next one you can catch |
 | Grüner Punkt · green dot | Echtzeit | live data |
 | Durchgestrichen · crossed out | fällt aus | cancelled |
+| Grau · grey | zu Fuß nicht mehr erreichbar | too late to walk there |
 
 ### Hilfe · Help
 **DE** Neues WLAN/Router? Auf „Kein WLAN“ lange drücken – der Einrichtungs-Hotspot startet wieder.
-Alles zurücksetzen: die Taste **BOOT** auf der Rückseite 10 Sekunden gedrückt halten.
+Alles löschen und neu einrichten: lange drücken → „Zurücksetzen …“ → „Löschen“ gedrückt halten (oder **BOOT** auf der Rückseite 10 Sekunden halten).
 **EN** New Wi-Fi/router? Press and hold the “No Wi-Fi” screen – the setup hotspot starts again.
-Reset everything: hold the **BOOT** button on the back for 10 seconds.
+Erase everything and set up again: press and hold → “Reset…” → hold “Erase” (or hold **BOOT** on the back for 10 seconds).

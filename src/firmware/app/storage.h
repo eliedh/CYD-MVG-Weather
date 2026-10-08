@@ -15,7 +15,9 @@ bool loadWifi(std::string& ssid, std::string& pass);
 bool saveWifi(const std::string& ssid, const std::string& pass);
 void clearWifi();
 
-// Erases everything this firmware stored (settings, Wi-Fi, calibration).
+// Erases everything: settings, stops, Wi-Fi, touch calibration and the whole
+// NVS partition. The caller restarts the device, which then opens the setup
+// hotspot like a brand-new unit.
 void factoryReset();
 
 }  // namespace storage

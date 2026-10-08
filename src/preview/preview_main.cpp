@@ -225,6 +225,8 @@ int main(int argc, char** argv) {
   render(renderer, full, vm, "22_need_stops");
   vm.screen = ui::Screen::SettingsQR;
   render(renderer, full, vm, "23_settings_qr");
+  vm.screen = ui::Screen::ResetConfirm;
+  render(renderer, full, vm, "28_reset_confirm");
   vm.screen = ui::Screen::NoWifi;
   render(renderer, full, vm, "24_no_wifi");
   vm.screen = ui::Screen::ResetHold;

@@ -2,7 +2,8 @@
 
 A standalone desk display for the Munich area (MVG/MVV). It shows the current
 weather and **one combined list of upcoming departures** from up to four stops,
-with walking-time awareness ("leave in 3 min"), real-time delays, cancellations
+with walking-time awareness ("leave in 3 min", departures you can no longer
+reach shown greyed out), real-time delays, cancellations
 and service notices. A non-technical person sets it up with a phone: plug in,
 scan the QR code, pick the Wi-Fi, choose stops. German and English.
 
@@ -166,6 +167,8 @@ home network, where stops are chosen.
 | Header (weather, clock) | hourly forecast | settings QR + URL |
 | Notice banner | service notice, tap to page through | settings QR + URL |
 | Any detail screen | back (notices: next page, then back) | settings QR + URL |
+| Settings QR screen | *Reset…* button → confirmation screen | – |
+| Reset confirmation | *Cancel* closes | **hold *Erase*** → erase everything |
 | "No Wi-Fi" screen | – | re-open the setup hotspot |
 | At night (screen dark/dim) | wakes the screen for 30 s | – |
 
@@ -177,13 +180,30 @@ Detail screens return to the board automatically after 30 s.
 |---|---|
 | 2 s | countdown appears |
 | release between 3 and 10 s | touch calibration |
-| 10 s | factory reset (settings, stops, Wi-Fi) and restart |
+| 10 s | factory reset and restart |
+
+### Starting over (new owner / new setup)
+Three ways to erase **everything** – Wi-Fi, stops, settings, touch calibration
+and the whole NVS flash partition – after which the device restarts into the
+setup hotspot exactly like a new unit:
+1. On the device: long-press anywhere → **Reset…** → press and hold **Erase**.
+2. Settings page → **Erase everything & set up again**.
+3. Hold **BOOT** for 10 s (works even without Wi-Fi or touch).
+
+### Which page is reachable when
+| Page | Reachable | How |
+|---|---|---|
+| Wi-Fi setup | only over the `Abfahrt-Setup-XXXX` hotspot | first boot, after a reset, *Change Wi-Fi*, or long-press on "No Wi-Fi" |
+| Settings (stops etc.) | any time on the home network | `http://abfahrt.local` or the IP; QR on the display (shown automatically while no stops are set, otherwise long-press) |
+
+On the home network `/setup` redirects to the settings page; Wi-Fi is changed
+via *Change Wi-Fi* there (the device restarts into the hotspot).
 
 ### Settings page (`http://abfahrt.local` or the IP shown on the display)
 Stops (search, up to 4), walking time, short label, transport types, line &
 direction filter (built from the stop's current departures), language,
 weather location override, brightness, automatic brightness, night mode
-(off / dim / dark, time window), touch calibration, change Wi-Fi, factory reset.
+(off / dim / dark, time window), touch calibration, change Wi-Fi, erase everything.
 
 ---
 
@@ -253,8 +273,8 @@ weather location override, brightness, automatic brightness, night mode
 
 ### Persistence
 NVS namespace `abfahrt`: `cfg` (settings JSON incl. touch calibration),
-`ssid`/`pass` (Wi-Fi). Factory reset clears the namespace and the core's Wi-Fi
-store.
+`ssid`/`pass` (Wi-Fi). Factory reset clears the namespace, the Wi-Fi driver's
+store, and then erases the entire NVS partition (`nvs_flash_erase`).
 
 ---
 

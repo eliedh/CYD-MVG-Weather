@@ -50,21 +50,63 @@ void test_single_stop_no_walk() {
   }
 }
 
-void test_walk_time_hides_unreachable_and_sets_leave_in() {
+void test_walk_time_marks_unreachable_and_sets_leave_in() {
   g_settings.stops.push_back(stop("freiheit", 5));
   load(0, "mvg_departures_freiheit.json");
   BoardRow rows[32];
   int n = buildBoard(g_stops, g_settings, FIXTURE_NOW, rows, 32);
-  for (int i = 0; i < n; i++) TEST_ASSERT_TRUE(rows[i].secondsUntil >= 5 * 60);
-  // first reachable: cancelled U6 at +6 is never the highlight; U3 Moosach +5 delayed 2 => +7,
-  // so order: U6(+6, cancelled) U3(+7) ...
+  // Unreachable (< 5 min): U3 +0, tram 23 +3 (delayed), U6 +3, bus 59 +4.
+  // Only the last kMaxUnreachableRows (U6, 59) are kept, greyed out.
+  TEST_ASSERT_EQUAL(2, kMaxUnreachableRows);
   TEST_ASSERT_EQUAL_STRING("U6", rows[0].dep.label);
-  TEST_ASSERT_TRUE(rows[0].dep.cancelled);
+  TEST_ASSERT_FALSE(rows[0].reachable);
+  TEST_ASSERT_EQUAL_STRING("59", rows[1].dep.label);
+  TEST_ASSERT_FALSE(rows[1].reachable);
   TEST_ASSERT_FALSE(rows[0].highlight);
-  TEST_ASSERT_EQUAL_STRING("U3", rows[1].dep.label);
-  TEST_ASSERT_TRUE(rows[1].highlight);
-  TEST_ASSERT_EQUAL(7, rows[1].minutes);
-  TEST_ASSERT_EQUAL(2, rows[1].leaveInMin);
+  TEST_ASSERT_FALSE(rows[1].highlight);
+  for (int i = 2; i < n; i++) {
+    TEST_ASSERT_TRUE(rows[i].reachable);
+    TEST_ASSERT_TRUE(rows[i].secondsUntil >= 5 * 60);
+  }
+  // first reachable: cancelled U6 at +6 is never the highlight; U3 Moosach
+  // +5 delayed 2 => +7 is the next catchable one.
+  TEST_ASSERT_EQUAL_STRING("U6", rows[2].dep.label);
+  TEST_ASSERT_TRUE(rows[2].dep.cancelled);
+  TEST_ASSERT_FALSE(rows[2].highlight);
+  TEST_ASSERT_EQUAL_STRING("U3", rows[3].dep.label);
+  TEST_ASSERT_TRUE(rows[3].highlight);
+  TEST_ASSERT_EQUAL(7, rows[3].minutes);
+  TEST_ASSERT_EQUAL(2, rows[3].leaveInMin);
+  // 16 departures - 1 departed - 2 unreachable dropped by the cap
+  TEST_ASSERT_EQUAL(13, n);
+}
+
+void test_unreachable_never_without_walk_time() {
+  g_settings.stops.push_back(stop("freiheit", 0));
+  load(0, "mvg_departures_freiheit.json");
+  BoardRow rows[32];
+  int n = buildBoard(g_stops, g_settings, FIXTURE_NOW, rows, 32);
+  for (int i = 0; i < n; i++) TEST_ASSERT_TRUE(rows[i].reachable);
+}
+
+void test_unreachable_per_stop_walk_times() {
+  g_settings.stops.push_back(stop("freiheit", 0));
+  g_settings.stops.push_back(stop("gauting", 15));
+  load(0, "mvg_departures_freiheit.json");
+  load(1, "mvg_departures_gauting.json");
+  BoardRow rows[64];
+  int n = buildBoard(g_stops, g_settings, FIXTURE_NOW, rows, 64);
+  int unreachable = 0;
+  for (int i = 0; i < n; i++) {
+    if (rows[i].dep.stopIndex == 0) TEST_ASSERT_TRUE(rows[i].reachable);
+    if (!rows[i].reachable) {
+      unreachable++;
+      TEST_ASSERT_EQUAL(1, rows[i].dep.stopIndex);
+      TEST_ASSERT_TRUE(rows[i].secondsUntil < 15 * 60);
+    }
+  }
+  // Gauting has 4 departures within 15 min (+1, +4, +10, +13): only 2 kept.
+  TEST_ASSERT_EQUAL(2, unreachable);
 }
 
 void test_merge_two_stops_sorted_with_stop_index() {
@@ -160,7 +202,9 @@ void test_line_styles() {
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_single_stop_no_walk);
-  RUN_TEST(test_walk_time_hides_unreachable_and_sets_leave_in);
+  RUN_TEST(test_walk_time_marks_unreachable_and_sets_leave_in);
+  RUN_TEST(test_unreachable_never_without_walk_time);
+  RUN_TEST(test_unreachable_per_stop_walk_times);
   RUN_TEST(test_merge_two_stops_sorted_with_stop_index);
   RUN_TEST(test_max_rows);
   RUN_TEST(test_filters_line_direction_and_type);

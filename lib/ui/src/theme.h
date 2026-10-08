@@ -18,6 +18,7 @@ constexpr uint32_t kDivider = 0x232A35;
 constexpr uint32_t kText = 0xF3F5F8;
 constexpr uint32_t kText2 = 0xA3ACBA;  // secondary
 constexpr uint32_t kText3 = 0x677181;  // tertiary / hints
+constexpr uint32_t kMissed = 0x56606E;  // departures you can no longer reach
 
 // Semantics
 constexpr uint32_t kAccent = 0x3DDC97;  // real-time, "leave in", primary actions

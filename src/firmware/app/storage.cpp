@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include <WiFi.h>
+#include <esp_wifi.h>
+#include <nvs_flash.h>
 
 namespace storage {
 
@@ -57,12 +59,23 @@ void clearWifi() {
 }
 
 void factoryReset() {
+  // 1) Our own namespace (settings, stops, touch calibration, Wi-Fi) - this
+  //    always works, even if the full erase below should fail.
   Preferences p;
   if (p.begin(kNs, false)) {
     p.clear();
     p.end();
   }
-  WiFi.disconnect(true, true);  // also erase any credentials the core cached
+  // 2) Wi-Fi credentials cached by the Wi-Fi driver, then the driver itself,
+  //    so nothing holds the NVS partition open.
+  WiFi.disconnect(true, true);
+  WiFi.mode(WIFI_OFF);
+  esp_wifi_stop();
+  esp_wifi_deinit();
+  // 3) Wipe the entire NVS partition: nothing from the previous owner survives.
+  esp_err_t err = nvs_flash_erase();
+  LOGI("factory reset: NVS erase %s", err == ESP_OK ? "ok" : esp_err_to_name(err));
+  nvs_flash_init();
 }
 
 }  // namespace storage

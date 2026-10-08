@@ -40,9 +40,9 @@ int buildBoard(const StopDepartures* stops, const Settings& s, int64_t now, Boar
       const Departure& d = sd.items[j];
       if (isFilteredOut(sc, d)) continue;
       int64_t until = d.effectiveTime() - now;
-      // Departed already, or you would not make it there in time.
-      if (until < 0 || until < (int64_t)sc.walkMin * 60) continue;
+      if (until < 0) continue;  // departed already
       BoardRow r;
+      r.reachable = until >= (int64_t)sc.walkMin * 60;
       r.dep = d;
       r.dep.stopIndex = (uint8_t)i;
       r.secondsUntil = (int32_t)until;
@@ -67,8 +67,24 @@ int buildBoard(const StopDepartures* stops, const Settings& s, int64_t now, Boar
                          }),
              rows.end());
 
+  // Keep only the last kMaxUnreachableRows unreachable rows (they sort first
+  // per stop; the latest ones are the "just missed" departures worth showing).
+  int unreachable = 0;
+  for (const BoardRow& r : rows)
+    if (!r.reachable) unreachable++;
+  int toDrop = unreachable - kMaxUnreachableRows;
+  if (toDrop > 0) {
+    rows.erase(std::remove_if(rows.begin(), rows.end(),
+                              [&toDrop](const BoardRow& r) {
+                                if (r.reachable || toDrop <= 0) return false;
+                                toDrop--;
+                                return true;
+                              }),
+               rows.end());
+  }
+
   for (BoardRow& r : rows) {
-    if (r.dep.cancelled) continue;
+    if (r.dep.cancelled || !r.reachable) continue;
     r.highlight = true;
     if (r.walkMin > 0)
       r.leaveInMin = (int16_t)floorDiv(r.secondsUntil - (int64_t)r.walkMin * 60, 60);

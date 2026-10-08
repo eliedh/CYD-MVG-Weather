@@ -152,7 +152,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 const I18N={
 de:{stops:"Haltestellen",addStop:"Haltestelle hinzufügen",searchPh:"z. B. Marienplatz",search:"Suchen",searching:"Suche …",noResults:"Nichts gefunden.",
 searchError:"Suche fehlgeschlagen. Ist die Tafel online?",maxStops:"Maximal 4 Haltestellen.",noStops:"Noch keine Haltestelle. Suche unten nach deiner Haltestelle.",
-walk:"Fußweg",min:"Min.",shortName:"Kurzname",remove:"Entfernen",linesDirs:"Linien & Richtungen",hiddenN:"{n} ausgeblendet",allShown:"alle sichtbar",
+walk:"Fußweg",walkHint:"Abfahrten, die du zu Fuß nicht mehr erreichst, werden grau angezeigt.",min:"Min.",shortName:"Kurzname",remove:"Entfernen",linesDirs:"Linien & Richtungen",hiddenN:"{n} ausgeblendet",allShown:"alle sichtbar",
 loadingLines:"Lade aktuelle Abfahrten …",linesError:"Konnte Linien nicht laden.",linesNote:"Basierend auf den nächsten Abfahrten. Nicht angehakte Linien/Richtungen werden ausgeblendet.",
 notRunning:"Gerade nicht im Fahrplan (ausgeblendet)",allDirections:"alle Richtungen",
 UBAHN:"U-Bahn",SBAHN:"S-Bahn",TRAM:"Tram",BUS:"Bus",REGIONAL_BUS:"Regionalbus",BAHN:"Zug",
@@ -160,14 +160,14 @@ weather:"Wetter",weatherOverride:"Eigener Ort",wxFirst:"Wetter für die erste Ha
 wxSearchPh:"Ort über Haltestelle suchen",lat:"Breitengrad",lon:"Längengrad",custom:"eigene Koordinaten",
 display:"Anzeige",language:"Sprache",brightness:"Helligkeit",autoBrightness:"Automatisch an Raumlicht anpassen",nightMode:"Nachtmodus",nightOff:"Aus",nightDim:"Dimmen",nightDark:"Dunkel",
 from:"Von",to:"Bis",nightHint:"Nachts reicht ein Tippen auf die Tafel, um sie für 30 Sekunden aufzuwecken.",
-system:"System",calibrate:"Touch kalibrieren",changeWifi:"WLAN ändern",factoryReset:"Auf Werkseinstellungen zurücksetzen",
+system:"System",calibrate:"Touch kalibrieren",changeWifi:"WLAN ändern",factoryReset:"Alles löschen & neu einrichten",
 calStarted:"Folge den Anweisungen auf der Tafel.",confirmWifi:"WLAN-Daten löschen? Die Tafel startet neu und öffnet wieder den Einrichtungs-Hotspot.",
-wifiReset:"Die Tafel startet den Einrichtungs-Hotspot.",confirmReset:"Wirklich alles zurücksetzen? Haltestellen, Einstellungen und WLAN werden gelöscht.",resetDone:"Zurückgesetzt. Die Tafel startet neu.",
+wifiReset:"Die Tafel startet den Einrichtungs-Hotspot.",confirmReset:"Wirklich alles zurücksetzen? WLAN, Haltestellen und alle Einstellungen werden gelöscht. Danach startet die Tafel neu und öffnet den Einrichtungs-Hotspot wie beim ersten Mal.",resetDone:"Alles gelöscht. Die Tafel startet neu – verbinde dich mit „Abfahrt-Setup-…“ für die neue Einrichtung.",
 save:"Änderungen speichern",saved:"Gespeichert ✓",saveError:"Speichern fehlgeschlagen.",
 online:"Online",updated:"aktualisiert {t}",apiErr:"MVG gerade nicht erreichbar",version:"Firmware",ip:"IP-Adresse",signal:"WLAN-Signal",heap:"Freier Speicher",uptime:"Laufzeit",offline:"Keine Verbindung zur Tafel",sources:"Abfahrten: MVG (inoffizielle Schnittstelle) · Wetter: Open-Meteo.com (CC BY 4.0)"},
 en:{stops:"Stops",addStop:"Add a stop",searchPh:"e.g. Marienplatz",search:"Search",searching:"Searching…",noResults:"Nothing found.",
 searchError:"Search failed. Is the board online?",maxStops:"Up to 4 stops.",noStops:"No stops yet. Search for your stop below.",
-walk:"Walking time",min:"min",shortName:"Short name",remove:"Remove",linesDirs:"Lines & directions",hiddenN:"{n} hidden",allShown:"all shown",
+walk:"Walking time",walkHint:"Departures you can no longer reach on foot are shown greyed out.",min:"min",shortName:"Short name",remove:"Remove",linesDirs:"Lines & directions",hiddenN:"{n} hidden",allShown:"all shown",
 loadingLines:"Loading current departures…",linesError:"Couldn’t load lines.",linesNote:"Based on upcoming departures. Unchecked lines/directions are hidden.",
 notRunning:"Not in the timetable right now (hidden)",allDirections:"all directions",
 UBAHN:"U-Bahn",SBAHN:"S-Bahn",TRAM:"Tram",BUS:"Bus",REGIONAL_BUS:"Regional bus",BAHN:"Train",
@@ -175,9 +175,9 @@ weather:"Weather",weatherOverride:"Custom location",wxFirst:"Weather for the fir
 wxSearchPh:"Find a place via a stop name",lat:"Latitude",lon:"Longitude",custom:"custom coordinates",
 display:"Display",language:"Language",brightness:"Brightness",autoBrightness:"Adapt to room light",nightMode:"Night mode",nightOff:"Off",nightDim:"Dim",nightDark:"Dark",
 from:"From",to:"Until",nightHint:"At night, one tap on the board wakes it for 30 seconds.",
-system:"System",calibrate:"Calibrate touch",changeWifi:"Change Wi-Fi",factoryReset:"Reset to factory settings",
+system:"System",calibrate:"Calibrate touch",changeWifi:"Change Wi-Fi",factoryReset:"Erase everything & set up again",
 calStarted:"Follow the instructions on the board.",confirmWifi:"Forget the Wi-Fi? The board restarts and opens the setup hotspot again.",
-wifiReset:"The board is starting the setup hotspot.",confirmReset:"Really reset everything? Stops, settings and Wi-Fi will be erased.",resetDone:"Reset done. The board restarts.",
+wifiReset:"The board is starting the setup hotspot.",confirmReset:"Really reset everything? Wi-Fi, stops and all settings will be erased. The board then restarts and opens the setup hotspot like the first time.",resetDone:"Everything erased. The board restarts – join “Abfahrt-Setup-…” to set it up again.",
 save:"Save changes",saved:"Saved ✓",saveError:"Saving failed.",
 online:"Online",updated:"updated {t}",apiErr:"MVG is unreachable right now",version:"Firmware",ip:"IP address",signal:"Wi-Fi signal",heap:"Free memory",uptime:"Uptime",offline:"Can’t reach the board",sources:"Departures: MVG (unofficial API) · Weather: Open-Meteo.com (CC BY 4.0)"}};
 const TYPES=["UBAHN","SBAHN","TRAM","BUS","REGIONAL_BUS","BAHN"];
@@ -245,6 +245,7 @@ function renderStops(){
     const hidden=(st.exclude||[]).length;
     c.innerHTML='<div class="stop-head"><div class="grow"><b>'+esc(st.name)+'</b></div><button class="icon-btn" title="'+t("remove")+'">×</button></div>'+
       '<div class="field"><label>'+t("walk")+'</label><div class="stepper"><button data-d="-1">−</button><span>'+st.walk+" "+t("min")+'</span><button data-d="1">+</button></div></div>'+
+      '<p class="muted" style="margin:-4px 0 4px">'+t("walkHint")+"</p>"+
       '<div class="field"><label>'+t("shortName")+'</label><input type="text" maxlength="24" value="'+esc(st.label||"")+'"></div>'+
       '<div class="chips">'+TYPES.map((ty,b)=>'<button class="chip'+((st.types>>b)&1?" on":"")+'" data-b="'+b+'">'+t(ty)+"</button>").join("")+"</div>"+
       '<button class="expander"><span>'+t("linesDirs")+"</span><small>"+(hidden?t("hiddenN",{n:hidden}):t("allShown"))+" ▾</small></button>"+

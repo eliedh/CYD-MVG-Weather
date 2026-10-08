@@ -20,7 +20,8 @@ enum class Screen : uint8_t {
   Main,            // weather header + departures
   WeatherDetail,   // hourly forecast
   MessageDetail,   // service message, paged
-  SettingsQR,      // long-press: settings URL + QR
+  SettingsQR,      // long-press: settings URL + QR (+ reset button)
+  ResetConfirm,    // "reset everything?" - Cancel / hold Erase
   ResetHold,       // BOOT button held: countdown
   CalibrateIntro,  // explains the touch calibration that follows
   Notice,          // short centred message (saved, restarting, ...)

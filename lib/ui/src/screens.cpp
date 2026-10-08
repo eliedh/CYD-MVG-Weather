@@ -127,21 +127,23 @@ void drawRow(Painter& p, const ViewModel& vm, const core::BoardRow& r, int y) {
   const core::Departure& d = r.dep;
   if (r.highlight) p.fillRoundRect(4, y + 1, kW - 8, kRowH - 2, kRadius, kSurfaceHi);
 
+  // Unreachable (walking time too long): everything in muted colours.
+  const bool missed = !r.reachable;
   widgets::lineBadge(p, 12, y + (kRowH - kBadgeH) / 2, kBadgeW, kBadgeH, d.type, d.label,
-                     d.cancelled);
+                     d.cancelled || missed);
 
   // ---- right column: minutes / time / cancelled
   char num[12] = {0};
   const char* unit = nullptr;
   const lgfx::IFont* numFont = fonts::title();
-  uint32_t numColor = d.realtime ? kText : kText2;
+  uint32_t numColor = missed ? kMissed : (d.realtime ? kText : kText2);
   int base = y + 24;
   if (d.cancelled) {
     snprintf(num, sizeof(num), "%s", "");
   } else if (r.minutes <= 0) {
     snprintf(num, sizeof(num), "%s", T(vm, Str::Now));
     numFont = fonts::body();
-    numColor = d.realtime ? kAccent : kText;
+    numColor = missed ? kMissed : (d.realtime ? kAccent : kText);
   } else if (r.minutes >= 60) {
     time_t t = (time_t)d.effectiveTime();
     struct tm lt;
@@ -160,17 +162,19 @@ void drawRow(Painter& p, const ViewModel& vm, const core::BoardRow& r, int y) {
                              textdatum_t::baseline_right);
   } else {
     int uw = unit ? p.textWidth(unit, fonts::small()) + 3 : 0;
-    if (unit) p.text(unit, right, base, fonts::small(), kText2, textdatum_t::baseline_right);
+    if (unit)
+      p.text(unit, right, base, fonts::small(), missed ? kMissed : kText2,
+             textdatum_t::baseline_right);
     int nw = p.text(num, right - uw, base, numFont, numColor, textdatum_t::baseline_right);
     colLeft = right - uw - nw;
     if (d.realtime) {
-      icons::liveDot(p, colLeft - 7, base - 13, kAccent);
+      icons::liveDot(p, colLeft - 7, base - 13, missed ? kMissed : kAccent);
       colLeft -= 10;
     }
     if (d.realtime && d.delayMin > 0) {
       char dl[8];
       snprintf(dl, sizeof(dl), "+%d", d.delayMin);
-      colLeft -= p.text(dl, colLeft - 3, base, fonts::small(), kWarn,
+      colLeft -= p.text(dl, colLeft - 3, base, fonts::small(), missed ? kMissed : kWarn,
                         textdatum_t::baseline_right) + 3;
     }
   }
@@ -189,7 +193,7 @@ void drawRow(Painter& p, const ViewModel& vm, const core::BoardRow& r, int y) {
   bool twoLines = sub[0] || stopLabel[0];
   int destBase = twoLines ? y + 16 : y + 23;
   std::string dest = p.ellipsize(d.destination, fonts::body(), maxW);
-  uint32_t destColor = d.cancelled ? kText3 : kText;
+  uint32_t destColor = d.cancelled ? kText3 : (missed ? kMissed : kText);
   int dw = p.text(dest.c_str(), tx, destBase, fonts::body(), destColor);
   if (d.cancelled) p.line(tx, destBase - 5, tx + dw, destBase - 5, 0.9f, kText2);
 
@@ -460,7 +464,31 @@ void drawUrlScreen(Painter& p, const ViewModel& vm, Str title, Str body, bool cl
   y += 22;
   widgets::lines(p, p.wrap(T(vm, Str::AlmostSameWifi), fonts::small(), maxW), tx, y, 16,
                  fonts::small(), kText3);
-  if (closeHint) centeredText(p, T(vm, Str::TapToClose), 230, fonts::small(), kText3);
+  if (closeHint) {  // settings QR: reset button bottom-left, close hint right
+    const int bx = kPad, by = 206, bw = 132, bh = 28;
+    p.fillRoundRect(bx, by, bw, bh, 8, kSurface);
+    p.text(T(vm, Str::ResetButton), bx + bw / 2, by + bh / 2 + 1, fonts::small(), kText2,
+           textdatum_t::middle_center);
+    p.text(T(vm, Str::TapToClose), kW - kPad, 225, fonts::small(), kText3,
+           textdatum_t::baseline_right);
+  }
+}
+
+constexpr int kBtnY = 164, kBtnH = 42, kBtnGap = 12;
+
+void drawResetConfirm(Painter& p, const ViewModel& vm) {
+  icons::warning(p, kW / 2 - 15, 16, 30, kDanger, kBg);
+  centeredText(p, T(vm, Str::ResetAskTitle), 78, fonts::title(), kText);
+  centeredWrapped(p, T(vm, Str::ResetAskBody), 104, 18, fonts::small(), kText2, kW - 40);
+  int bw = (kW - 2 * kPad - kBtnGap) / 2;
+  int x1 = kPad, x2 = kPad + bw + kBtnGap;
+  p.fillRoundRect(x1, kBtnY, bw, kBtnH, 10, kSurfaceHi);
+  p.text(T(vm, Str::Cancel), x1 + bw / 2, kBtnY + kBtnH / 2 + 1, fonts::body(), kText,
+         textdatum_t::middle_center);
+  p.fillRoundRect(x2, kBtnY, bw, kBtnH, 10, kDanger);
+  p.text(T(vm, Str::Erase), x2 + bw / 2, kBtnY + kBtnH / 2 + 1, fonts::body(), 0x2A0A0A,
+         textdatum_t::middle_center);
+  centeredText(p, T(vm, Str::HoldToErase), 228, fonts::small(), kText3);
 }
 
 void drawConnecting(Painter& p, const ViewModel& vm) {
@@ -540,6 +568,16 @@ HitZone hitTestMain(const ViewModel& vm, int x, int y) {
   return HitZone::Body;
 }
 
+HitZone hitTestSettingsQR(int x, int y) {
+  // generous target around the 132x28 button at (10, 206)
+  return (x < 160 && y >= 196) ? HitZone::ResetButton : HitZone::None;
+}
+
+HitZone hitTestResetConfirm(int x, int y) {
+  if (y < kBtnY - 10 || y > kBtnY + kBtnH + 10) return HitZone::None;
+  return x < kW / 2 ? HitZone::Cancel : HitZone::Erase;
+}
+
 int messagePageCount(lgfx::LovyanGFX& measure, const ViewModel& vm) {
   if (vm.messageCount == 0) return 0;
   return (int)layoutMessage(measure, vm).pages.size();
@@ -557,6 +595,7 @@ void drawScreen(Painter& p, const ViewModel& vm) {
     case Screen::WeatherDetail: drawWeatherDetail(p, vm); break;
     case Screen::MessageDetail: drawMessageDetail(p, vm); break;
     case Screen::SettingsQR: drawUrlScreen(p, vm, Str::SettingsTitle, Str::SettingsBody, true); break;
+    case Screen::ResetConfirm: drawResetConfirm(p, vm); break;
     case Screen::ResetHold: drawResetHold(p, vm); break;
     case Screen::CalibrateIntro: drawCalibrateIntro(p, vm); break;
     case Screen::Notice: drawNotice(p, vm); break;
