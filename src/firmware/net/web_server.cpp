@@ -40,6 +40,13 @@ void sendErr(AsyncWebServerRequest* r, int code, const char* msg) {
   sendJson(r, s, code);
 }
 
+// True when the request arrived over the setup hotspot (as opposed to the home
+// network). While the hotspot lingers after a successful setup, phones that
+// are already back on the home Wi-Fi must get the settings page.
+bool viaHotspot(AsyncWebServerRequest* r) {
+  return portalMode && r->client() && r->client()->localIP() == IPAddress(192, 168, 4, 1);
+}
+
 void redirectToPortal(AsyncWebServerRequest* r) {
   r->redirect("http://192.168.4.1/");
 }
@@ -119,7 +126,7 @@ void handleInfo(AsyncWebServerRequest* r) {
 void routes() {
   // ---------------------------------------------------------------- pages
   server.on("/", HTTP_GET, [](AsyncWebServerRequest* r) {
-    if (portalMode) sendGz(r, WEB_SETUP_GZ, WEB_SETUP_GZ_LEN);
+    if (viaHotspot(r)) sendGz(r, WEB_SETUP_GZ, WEB_SETUP_GZ_LEN);
     else sendGz(r, WEB_SETTINGS_GZ, WEB_SETTINGS_GZ_LEN);
   });
   server.on("/setup", HTTP_GET,
@@ -132,12 +139,12 @@ void routes() {
                            "/library/test/success.html", "/connecttest.txt", "/ncsi.txt",
                            "/redirect", "/fwlink", "/canonical.html", "/success.txt"}) {
     server.on(path, HTTP_ANY, [](AsyncWebServerRequest* r) {
-      if (portalMode) redirectToPortal(r);
+      if (viaHotspot(r)) redirectToPortal(r);
       else r->send(204);
     });
   }
   server.onNotFound([](AsyncWebServerRequest* r) {
-    if (portalMode) redirectToPortal(r);
+    if (viaHotspot(r)) redirectToPortal(r);
     else r->send(404, "text/plain", "not found");
   });
 

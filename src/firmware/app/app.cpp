@@ -347,19 +347,21 @@ void loop() {
   handleTouch(screen);
   screen = bootHold ? Screen::ResetHold : currentScreen();
 
-  // Build the view model (cheap) and render when anything visible may change.
+  // Rebuild the view model and render only when something visible may have
+  // changed (second tick, new data, navigation, animation step).
   int64_t epoch = (int64_t)time(nullptr);
-  ui::fillFromSnapshot(vm, settings, data, epoch, timeValid);
-  vm.screen = screen;
   bool animated = screen == Screen::Connecting || screen == Screen::NoWifi ||
                   (screen == Screen::Main && !vm.hasDepartureData);
-  vm.animPhase = animated ? (int)(now / 450) % 3 : 0;
+  int anim = animated ? (int)(now / 450) % 3 : 0;
   uint32_t s = sig({(uint32_t)screen, (uint32_t)epoch, dataVersion, settingsVersion,
-                    (uint32_t)vm.animPhase, (uint32_t)vm.messageIndex, (uint32_t)vm.messagePage,
+                    (uint32_t)anim, (uint32_t)vm.messageIndex, (uint32_t)vm.messagePage,
                     (uint32_t)vm.wifiDown, (uint32_t)vm.resetSeconds,
-                    (uint32_t)vm.resetReleaseToCalibrate, (uint32_t)net});
+                    (uint32_t)vm.resetReleaseToCalibrate, (uint32_t)net, (uint32_t)timeValid});
   if (s != lastSig) {
     lastSig = s;
+    ui::fillFromSnapshot(vm, settings, data, epoch, timeValid);
+    vm.screen = screen;
+    vm.animPhase = anim;
     render();
   }
 

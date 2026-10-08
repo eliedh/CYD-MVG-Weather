@@ -1,0 +1,73 @@
+name: Build & test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Native unit tests + design preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-native-${{ hashFiles('platformio.ini') }}
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+      - name: Unit tests
+        run: pio test -e native
+      - name: Render screenshots
+        run: |
+          pio run -e preview
+          .pio/build/preview/program build/screenshots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: build/screenshots/*.png
+
+  firmware:
+    name: Firmware (${{ matrix.env }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [cyd_st7789, cyd_ili9341, cyd_st7789_debug]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-esp32-${{ hashFiles('platformio.ini') }}
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+      - name: Build
+        run: pio run -e ${{ matrix.env }}
+      - name: Collect binaries
+        run: |
+          mkdir -p dist
+          B=.pio/build/${{ matrix.env }}
+          cp $B/firmware-merged.bin dist/${{ matrix.env }}-merged-0x0.bin
+          cp $B/firmware.bin       dist/${{ matrix.env }}-app-0x10000.bin
+          cp $B/bootloader.bin     dist/${{ matrix.env }}-bootloader-0x1000.bin
+          cp $B/partitions.bin     dist/${{ matrix.env }}-partitions-0x8000.bin
+          cp ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin dist/boot_app0-0xe000.bin
+          cat > dist/FLASHING.txt <<'EOF'
+          Easiest: flash the *-merged-0x0.bin file at offset 0x0
+            esptool.py --chip esp32 --baud 460800 write_flash 0x0 <env>-merged-0x0.bin
+          or use https://espressif.github.io/esptool-js/ (offset 0x0, baud 460800).
+          See README.md for details.
+          EOF
+          ls -la dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.env }}
+          path: dist/*

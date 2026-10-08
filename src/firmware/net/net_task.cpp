@@ -32,6 +32,7 @@ constexpr uint32_t kWeatherStaggerMs = 8 * 1000;  // first weather after first d
 constexpr uint32_t kConnectTimeoutMs = 30 * 1000;
 constexpr uint32_t kPortalTryTimeoutMs = 20 * 1000;
 constexpr uint32_t kPortalLingerMs = 90 * 1000;  // keep AP up so the phone sees "done"
+constexpr uint32_t kPortalIdleRestartMs = 10 * 60 * 1000;  // re-opened portal left unused
 constexpr const char* kTz = "CET-1CEST,M3.5.0,M10.5.0/3";
 
 DNSServer dns;
@@ -43,6 +44,7 @@ core::WeatherProvider& weatherProvider = meteo;
 
 bool portalActive = false;
 uint32_t portalCloseAt = 0;
+uint32_t portalOpenedAt = 0;
 uint32_t connectStartedAt = 0;
 uint32_t portalTryAt = 0;
 uint32_t lastReconnectAt = 0;
@@ -79,7 +81,18 @@ void startPortal() {
   if (portalActive) return;
   char ssid[33];
   apName(ssid, sizeof(ssid));
-  WiFi.mode(g.hasCredentials ? WIFI_AP_STA : WIFI_AP);
+  bool hadCreds;
+  {
+    SharedLock l;
+    hadCreds = g.hasCredentials;
+  }
+  if (hadCreds) {
+    // Re-opened from "No Wi-Fi": stop STA retries, they hop channels and make
+    // the hotspot unstable. Retried after new credentials or a restart.
+    WiFi.setAutoReconnect(false);
+    WiFi.disconnect(false, false);
+  }
+  WiFi.mode(WIFI_AP_STA);  // STA needed for scanning
   WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1),
                     IPAddress(255, 255, 255, 0));
   WiFi.softAP(ssid);  // open network: joining via QR must be effortless
@@ -87,6 +100,7 @@ void startPortal() {
   dns.start(53, "*", WiFi.softAPIP());
   portalActive = true;
   portalCloseAt = 0;
+  portalOpenedAt = millis();
   {
     SharedLock l;
     strlcpy(g.apSsid, ssid, sizeof(g.apSsid));
@@ -263,6 +277,17 @@ void wifiLoop() {
     return;
   }
   if (portalActive && portalCloseAt && now > portalCloseAt) stopPortal();
+  if (portalActive && !portalCloseAt && pc == PortalConnect::Idle) {
+    bool hadCreds;
+    {
+      SharedLock l;
+      hadCreds = g.hasCredentials;
+    }
+    if (hadCreds && now - portalOpenedAt > kPortalIdleRestartMs) {
+      LOGI("setup portal unused for 10 min, restarting to retry the known Wi-Fi");
+      ESP.restart();
+    }
+  }
 
   switch (state) {
     case NetState::Portal:

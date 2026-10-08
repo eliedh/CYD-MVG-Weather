@@ -49,7 +49,7 @@ input:focus{outline:2px solid var(--accent);border-color:transparent}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:24px;padding:0 6px;border-radius:4px;color:#fff;font-weight:700;font-size:14px}
 .search{display:flex;gap:8px}
 .search input{flex:1}
-.btn{padding:12px 18px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:600 16px/1.2 inherit;font-family:inherit;cursor:pointer}
+.btn{padding:12px 18px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-family:inherit;font-weight:600;font-size:16px;line-height:1.2;cursor:pointer}
 .btn.ghost{background:var(--surface-hi);color:var(--text)}
 .btn.danger{background:none;color:var(--danger);border:1px solid var(--divider)}
 .btn.wide{width:100%}
@@ -267,17 +267,17 @@ async function loadLines(st,box,ex){
 }
 function renderLines(st,box,ex,list){
   st.exclude=st.exclude||[];
-  const groups={};list.forEach(l=>{(groups[l.label]=groups[l.label]||{type:l.type,dirs:[]}).dirs.push(l.dest);});
+  const groups=new Map();list.forEach(l=>{if(!groups.has(l.label))groups.set(l.label,{type:l.type,dirs:[]});groups.get(l.label).dirs.push(l.dest);});
   const has=k=>st.exclude.includes(k);
   const tog=k=>{has(k)?st.exclude.splice(st.exclude.indexOf(k),1):st.exclude.push(k);dirty();renderLines(st,box,ex,list);};
   let h='<p class="muted" style="margin:4px 0 8px">'+t("linesNote")+"</p>";
-  for(const label in groups){
-    const g=groups[label],lineOff=has(label);
+  for(const [label,g] of groups){
+    const lineOff=has(label);
     h+='<div class="line-group"><label class="check"><input type="checkbox" data-k="'+esc(label)+'"'+(lineOff?"":" checked")+">"+badge(label,g.type)+'<span class="muted">'+t("allDirections")+"</span></label>";
     g.dirs.forEach(d=>{const k=label+">"+d;h+='<label class="check dir'+(lineOff?" off":"")+'"><input type="checkbox" data-k="'+esc(k)+'"'+(has(k)||lineOff?"":" checked")+(lineOff?" disabled":"")+">"+esc(d)+"</label>";});
     h+="</div>";
   }
-  const known=new Set();for(const l in groups){known.add(l);groups[l].dirs.forEach(d=>known.add(l+">"+d));}
+  const known=new Set();for(const [l,g] of groups){known.add(l);g.dirs.forEach(d=>known.add(l+">"+d));}
   const orphans=st.exclude.filter(k=>!known.has(k));
   if(orphans.length){h+='<div class="line-group"><p class="muted" style="margin:4px 0">'+t("notRunning")+"</p>";
     orphans.forEach(k=>{h+='<label class="check"><input type="checkbox" data-k="'+esc(k)+'">'+esc(k.replace(">"," → "))+"</label>";});h+="</div>";}
