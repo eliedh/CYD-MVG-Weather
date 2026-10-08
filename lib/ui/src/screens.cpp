@@ -389,7 +389,7 @@ void drawMessageDetail(Painter& p, const ViewModel& vm) {
   p.text(T(vm, (last && !moreMsgs) ? Str::TapToClose : Str::TapNext), kPad, 232, fonts::small(),
          kText3);
   if (pages > 1 || vm.messageCount > 1) {
-    char pg[24];
+    char pg[48];
     if (vm.messageCount > 1)
       snprintf(pg, sizeof(pg), "%d/%d  \xC2\xB7  %d/%d", vm.messageIndex + 1, vm.messageCount,
                page + 1, pages);

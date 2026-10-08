@@ -114,28 +114,28 @@ std::vector<std::string> Painter::wrap(const char* s, const lgfx::IFont* font, i
       p++;
       continue;
     }
-    // next word (including leading spaces)
+    // next tok (including leading spaces)
     while (*p == ' ') p++;
     const char* ws = p;
     while (*p && *p != ' ' && *p != '\n') p++;
-    std::string word(ws, p - ws);
-    if (word.empty()) continue;
-    std::string candidate = line.empty() ? word : line + " " + word;
+    std::string tok(ws, p - ws);
+    if (tok.empty()) continue;
+    std::string candidate = line.empty() ? tok : line + " " + tok;
     if (textWidth(candidate.c_str(), font) <= maxW) {
       line = candidate;
       continue;
     }
     if (!line.empty()) flush();
     // hard-break words that are longer than a line
-    while (textWidth(word.c_str(), font) > maxW) {
-      size_t cut = word.size();
-      while (cut > 1 && textWidth(word.substr(0, cut).c_str(), font) > maxW)
-        cut = prevBoundary(word, cut);
+    while (textWidth(tok.c_str(), font) > maxW) {
+      size_t cut = tok.size();
+      while (cut > 1 && textWidth(tok.substr(0, cut).c_str(), font) > maxW)
+        cut = prevBoundary(tok, cut);
       if (cut == 0) cut = 1;
-      lines.push_back(word.substr(0, cut));
-      word = word.substr(cut);
+      lines.push_back(tok.substr(0, cut));
+      tok = tok.substr(cut);
     }
-    line = word;
+    line = tok;
   }
   if (!line.empty()) lines.push_back(line);
   return lines;

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1015">
+<title>Abfahrt – Einrichtung</title>
+<style>
+:root{--bg:#0D1015;--surface:#171C24;--surface-hi:#1E2530;--divider:#232A35;--text:#F3F5F8;--text2:#A3ACBA;--text3:#677181;--accent:#3DDC97;--accent-ink:#06281A;--warn:#F7B548;--danger:#FF6B6B;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:460px;margin:0 auto;padding:28px 20px 40px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);display:grid;align-content:center;gap:4px;padding:0 8px}
+.logo i{display:block;height:5px;border-radius:3px;background:var(--accent-ink)}.logo i:nth-child(2){width:55%}.logo i:nth-child(3){width:75%}
+.brand b{font-size:20px;letter-spacing:-.01em}
+h1{font-size:28px;line-height:1.15;margin:0 0 8px;letter-spacing:-.02em}
+p.lead{color:var(--text2);margin:0 0 24px}
+.card{background:var(--surface);border-radius:var(--r);padding:6px;margin-bottom:16px}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 14px;border:0;background:none;color:inherit;font:inherit;text-align:left;border-radius:12px;cursor:pointer}
+.row:active,.row.sel{background:var(--surface-hi)}
+.row .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row small{color:var(--text3)}
+.bars{display:flex;gap:2px;align-items:flex-end;height:14px}.bars i{width:4px;border-radius:1px;background:var(--text3)}.bars i.on{background:var(--text)}
+.bars i:nth-child(1){height:5px}.bars i:nth-child(2){height:8px}.bars i:nth-child(3){height:11px}.bars i:nth-child(4){height:14px}
+.lock{width:12px;height:12px;color:var(--text3)}
+.btn{display:block;width:100%;padding:16px;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);font:600 17px/1 inherit;font-family:inherit;cursor:pointer}
+.btn.ghost{background:var(--surface);color:var(--text)}
+.btn:disabled{opacity:.5}
+.lang{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.lang button{padding:20px 12px;border-radius:var(--r);border:2px solid var(--surface);background:var(--surface);color:var(--text);font:600 17px/1.2 inherit;font-family:inherit;cursor:pointer}
+.lang button.sel{border-color:var(--accent)}
+.lang small{display:block;color:var(--text3);font-weight:500;font-size:13px;margin-top:4px}
+label{display:block;color:var(--text2);font-size:14px;margin:14px 2px 6px}
+input{width:100%;padding:15px 14px;border-radius:12px;border:1px solid var(--divider);background:var(--bg);color:var(--text);font:inherit;font-size:17px}
+input:focus{outline:2px solid var(--accent);border-color:transparent}
+.pw{position:relative}.pw button{position:absolute;right:6px;top:6px;bottom:6px;padding:0 12px;border:0;border-radius:9px;background:var(--surface-hi);color:var(--text2);font:inherit;font-size:14px}
+.muted{color:var(--text3);font-size:14px}
+.err{color:var(--danger);margin:12px 2px 0;font-size:15px}
+.head{display:flex;justify-content:space-between;align-items:center;margin:0 2px 10px}
+.head h2{font-size:15px;color:var(--text2);font-weight:600;margin:0}
+.link{background:none;border:0;color:var(--accent);font:inherit;font-size:15px;cursor:pointer;padding:6px}
+.spin{width:44px;height:44px;border-radius:50%;border:4px solid var(--surface-hi);border-top-color:var(--accent);animation:s 1s linear infinite;margin:40px auto 24px}
+@keyframes s{to{transform:rotate(1turn)}}
+.ok{width:64px;height:64px;border-radius:50%;background:var(--accent);margin:24px auto;display:grid;place-items:center}
+.ok svg{width:34px;height:34px}
+.steps{counter-reset:n;padding:0;list-style:none;margin:20px 0}
+.steps li{position:relative;padding:4px 0 14px 44px;color:var(--text2)}
+.steps li b{color:var(--text)}
+.steps li:before{counter-increment:n;content:counter(n);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;display:grid;place-items:center;font-size:15px}
+.url{font-weight:700;color:var(--accent)}
+.center{text-align:center}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><div class="logo"><i></i><i></i><i></i></div><b>Abfahrt</b></div>
+
+  <!-- 1: language -->
+  <section id="s-lang">
+    <h1 data-t="welcome"></h1>
+    <p class="lead" data-t="welcomeLead"></p>
+    <div class="lang">
+      <button id="l-de" onclick="setLang('de')">Deutsch<small>German</small></button>
+      <button id="l-en" onclick="setLang('en')">English<small>Englisch</small></button>
+    </div>
+    <button class="btn" onclick="show('s-wifi');scan()" data-t="next"></button>
+  </section>
+
+  <!-- 2: Wi-Fi -->
+  <section id="s-wifi" hidden>
+    <h1 data-t="wifiTitle"></h1>
+    <p class="lead" data-t="wifiLead"></p>
+    <div class="head"><h2 data-t="networks"></h2><button class="link" onclick="scan(true)" data-t="refresh"></button></div>
+    <div class="card" id="nets"><div class="row"><span class="muted" data-t="scanning"></span></div></div>
+    <button class="row" style="margin-bottom:8px" onclick="pick('',false)"><span class="grow" data-t="other"></span></button>
+    <form id="form" hidden onsubmit="connect(event)">
+      <div id="ssidBox"><label for="ssid" data-t="ssid"></label><input id="ssid" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+      <div id="pwBox"><label for="pass" data-t="password"></label>
+      <div class="pw"><input id="pass" type="password" autocomplete="current-password"><button type="button" onclick="togglePw()" data-t="show"></button></div></div>
+      <p class="err" id="formErr" hidden></p>
+      <div style="height:16px"></div>
+      <button class="btn" data-t="connect"></button>
+    </form>
+  </section>
+
+  <!-- 3: connecting / result -->
+  <section id="s-conn" hidden class="center">
+    <div class="spin"></div>
+    <h1 data-t="connecting"></h1>
+    <p class="lead" id="connSsid"></p>
+  </section>
+
+  <section id="s-done" hidden>
+    <div class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="#06281A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h1 class="center" data-t="doneTitle"></h1>
+    <ol class="steps">
+      <li data-t="done1"></li>
+      <li data-t="done2"></li>
+      <li><span data-t="done3"></span> <span class="url" id="doneUrl"></span></li>
+    </ol>
+    <p class="muted center" id="doneIp"></p>
+  </section>
+
+  <section id="s-lost" hidden>
+    <h1 data-t="lostTitle" style="margin-top:32px"></h1>
+    <p class="lead" data-t="lostLead"></p>
+    <ol class="steps"><li data-t="done1"></li><li data-t="done2"></li></ol>
+    <button class="btn ghost" onclick="show('s-wifi')" data-t="tryAgain"></button>
+  </section>
+
+  <section id="s-fail" hidden class="center">
+    <h1 data-t="failTitle" style="margin-top:32px"></h1>
+    <p class="lead" data-t="failLead"></p>
+    <button class="btn" onclick="show('s-wifi')" data-t="tryAgain"></button>
+  </section>
+</main>
+<script>
+const I18N={
+de:{welcome:"Willkommen!",welcomeLead:"In zwei Minuten zeigt deine Abfahrtstafel Wetter und Abfahrten. Wähle zuerst die Sprache.",next:"Weiter",
+wifiTitle:"Mit dem WLAN verbinden",wifiLead:"Wähle dein Heim-WLAN. Die Tafel braucht Internet für Abfahrten und Wetter.",networks:"Netzwerke in der Nähe",refresh:"Aktualisieren",
+scanning:"Suche nach Netzwerken …",noNets:"Keine Netzwerke gefunden. Tippe auf „Aktualisieren“.",other:"Anderes Netzwerk …",ssid:"Netzwerkname (SSID)",password:"Passwort",show:"Zeigen",hide:"Verbergen",
+connect:"Verbinden",needSsid:"Bitte gib den Netzwerknamen ein.",connecting:"Verbinde …",doneTitle:"Verbunden!",
+done1:"Verbinde dein Handy wieder mit deinem <b>Heim-WLAN</b>.",done2:"Scanne den <b>QR-Code auf der Tafel</b>, um Haltestellen auszuwählen.",done3:"Oder öffne",
+failTitle:"Das hat nicht geklappt",failLead:"Die Tafel konnte sich nicht verbinden. Prüfe das Passwort und versuche es noch einmal.",tryAgain:"Nochmal versuchen",netError:"Keine Verbindung zur Tafel. Bist du noch mit ihrem WLAN verbunden?",ipNote:"IP-Adresse: ",lostTitle:"Schau auf die Tafel",lostLead:"Die Verbindung zur Tafel wurde unterbrochen – das ist normal, wenn sie ins Heim-WLAN wechselt. Zeigt sie „Fast fertig!“? Dann hat alles geklappt:"},
+en:{welcome:"Welcome!",welcomeLead:"In two minutes your board will show the weather and departures. First, pick a language.",next:"Continue",
+wifiTitle:"Connect to Wi-Fi",wifiLead:"Choose your home Wi-Fi. The board needs internet for departures and weather.",networks:"Networks nearby",refresh:"Refresh",
+scanning:"Looking for networks…",noNets:"No networks found. Tap “Refresh”.",other:"Other network…",ssid:"Network name (SSID)",password:"Password",show:"Show",hide:"Hide",
+connect:"Connect",needSsid:"Please enter the network name.",connecting:"Connecting…",doneTitle:"Connected!",
+done1:"Switch your phone back to your <b>home Wi-Fi</b>.",done2:"Scan the <b>QR code on the board</b> to choose your stops.",done3:"Or open",
+failTitle:"That didn’t work",failLead:"The board couldn’t connect. Check the password and try again.",tryAgain:"Try again",netError:"Can’t reach the board. Are you still connected to its Wi-Fi?",ipNote:"IP address: ",lostTitle:"Look at the board",lostLead:"The connection to the board dropped – that’s normal while it switches to your home Wi-Fi. Does it show “Almost done!”? Then everything worked:"}};
+let lang="de",chosen=null,chosenOpen=false;
+const $=id=>document.getElementById(id);
+const t=k=>I18N[lang][k]||k;
+function apply(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(e=>e.innerHTML=t(e.dataset.t));$("l-de").classList.toggle("sel",lang=="de");$("l-en").classList.toggle("sel",lang=="en");}
+function setLang(l){lang=l;apply();}
+function show(id){document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!=id);window.scrollTo(0,0);}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function bars(rssi){const n=rssi>-55?4:rssi>-67?3:rssi>-78?2:1;let h='<span class="bars">';for(let i=1;i<=4;i++)h+='<i class="'+(i<=n?"on":"")+'"></i>';return h+"</span>";}
+const LOCK='<svg class="lock" viewBox="0 0 12 12"><rect x="2" y="5" width="8" height="6" rx="1.5" fill="currentColor"/><path d="M4 5V3.6a2 2 0 014 0V5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>';
+async function scan(refresh){
+  const box=$("nets");
+  if(refresh)box.innerHTML='<div class="row"><span class="muted">'+t("scanning")+"</span></div>";
+  for(let i=0;i<20;i++){
+    try{
+      const r=await (await fetch("/api/scan"+(refresh&&i==0?"?refresh=1":""))).json();
+      if(!r.scanning||r.networks.length){render(r.networks);if(!r.scanning)return;}
+    }catch(e){box.innerHTML='<div class="row"><span class="err">'+t("netError")+"</span></div>";return;}
+    await sleep(1000);
+  }
+}
+function render(list){
+  const box=$("nets");
+  if(!list.length){box.innerHTML='<div class="row"><span class="muted">'+t("noNets")+"</span></div>";return;}
+  box.innerHTML="";
+  list.forEach(n=>{const b=document.createElement("button");b.className="row";b.innerHTML='<span class="grow">'+esc(n.ssid)+"</span>"+(n.open?"":LOCK)+bars(n.rssi);
+    b.onclick=()=>{document.querySelectorAll("#nets .row").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");pick(n.ssid,n.open)};box.appendChild(b);});
+}
+function pick(ssid,open){chosen=ssid;chosenOpen=open;$("form").hidden=false;$("ssidBox").hidden=!!ssid;$("pwBox").hidden=open;$("ssid").value=ssid;$("pass").value="";$("formErr").hidden=true;
+  setTimeout(()=>{(ssid?(open?null:$("pass")):$("ssid"))?.focus();$("form").scrollIntoView({behavior:"smooth",block:"center"});},50);}
+function togglePw(){const p=$("pass");p.type=p.type=="password"?"text":"password";event.target.textContent=t(p.type=="password"?"show":"hide");}
+async function connect(ev){
+  ev.preventDefault();
+  const ssid=$("ssid").value.trim();
+  if(!ssid){$("formErr").textContent=t("needSsid");$("formErr").hidden=false;return;}
+  $("connSsid").textContent=ssid;show("s-conn");
+  try{await fetch("/api/wifi",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ssid:ssid,pass:$("pass").value,lang:lang})});}
+  catch(e){$("formErr").textContent=t("netError");$("formErr").hidden=false;show("s-wifi");return;}
+  let errors=0;
+  for(let i=0;i<40;i++){
+    await sleep(1000);
+    try{const s=await (await fetch("/api/wifistatus")).json();errors=0;
+      if(s.state=="ok"){$("doneUrl").textContent="http://"+s.host;$("doneIp").textContent=t("ipNote")+s.ip;show("s-done");return;}
+      if(s.state=="failed"){show("s-fail");return;}
+    }catch(e){if(++errors>=6){show("s-lost");return;}}
+  }
+  show("s-lost");
+}
+fetch("/api/info").then(r=>r.json()).then(i=>{if(i.lang){lang=i.lang;apply();}}).catch(()=>{});
+apply();
+</script>
+</body>
+</html>
