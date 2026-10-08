@@ -1,0 +1,29 @@
+{
+ "servingLines": [],
+ "departures": [
+  {
+   "departureTimePlanned": 1791475500,
+   "departureTime": 1791475620,
+   "realTime": true,
+   "product": "SBAHN",
+   "line": {
+    "label": "S8",
+    "transportType": "SBAHN"
+   },
+   "direction": "Flughafen München",
+   "isCancelled": false,
+   "platform": "3"
+  },
+  {
+   "departureTimePlanned": 1791475740,
+   "product": "TRAM",
+   "line": {
+    "label": "17"
+   },
+   "direction": "Amalienburgstraße"
+  },
+  {
+   "label": "broken entry without any time"
+  }
+ ]
+}

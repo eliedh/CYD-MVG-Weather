@@ -1,0 +1,11 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "description": "Screens, theme, widgets and band renderer drawn with LovyanGFX; no hardware access",
+  "dependencies": [
+    { "name": "core" },
+    { "name": "LovyanGFX", "owner": "lovyan03", "version": "^1.2.7" }
+  ],
+  "frameworks": "*",
+  "platforms": "*"
+}

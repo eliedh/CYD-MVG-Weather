@@ -1,0 +1,55 @@
+[
+ {
+  "type": "STATION",
+  "latitude": 48.16153,
+  "longitude": 11.5863,
+  "place": "München",
+  "name": "Münchner Freiheit",
+  "globalId": "de:09162:500",
+  "divaId": 500,
+  "hasZoomData": true,
+  "transportTypes": [
+   "UBAHN",
+   "TRAM",
+   "BUS"
+  ],
+  "aliases": "Muenchner Freiheit Schwabing",
+  "tariffZones": "m"
+ },
+ {
+  "type": "STATION",
+  "latitude": 48.1591,
+  "longitude": 11.5844,
+  "place": "München",
+  "name": "Münchner Freiheit (Leopoldstraße)",
+  "globalId": "de:09162:501",
+  "divaId": 501,
+  "hasZoomData": false,
+  "transportTypes": [
+   "BUS"
+  ],
+  "tariffZones": "m"
+ },
+ {
+  "type": "POI",
+  "latitude": 48.161,
+  "longitude": 11.586,
+  "place": "München",
+  "name": "Freiheiz (POI, must be skipped)",
+  "poiType": "LEISURE"
+ },
+ {
+  "type": "STATION",
+  "latitude": 48.06321,
+  "longitude": 11.37766,
+  "place": "Gauting",
+  "name": "Gauting, Bahnhof",
+  "globalId": "de:09188:7520",
+  "divaId": 7520,
+  "transportTypes": [
+   "SBAHN",
+   "REGIONAL_BUS"
+  ],
+  "tariffZones": "1"
+ }
+]

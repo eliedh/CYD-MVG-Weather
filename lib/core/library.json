@@ -1,0 +1,9 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "Hardware-independent logic: data model, JSON parsers, departure board logic, settings, i18n",
+  "dependencies": [{ "name": "ArduinoJson", "owner": "bblanchon", "version": "^7.4.2" }],
+  "build": { "flags": ["-std=gnu++17"] },
+  "frameworks": "*",
+  "platforms": "*"
+}

@@ -1,0 +1,93 @@
+[
+ {
+  "title": "U3/U6: Eingeschränkter Betrieb am Abend",
+  "description": "<p>Wegen Bauarbeiten zwischen <b>Sendlinger Tor</b> und &bdquo;Implerstra&szlig;e&ldquo; fahren die Linien U3 und U6 vom 10. bis 26.&nbsp;Oktober jeweils ab 22:00&nbsp;Uhr nur im 10-Minuten-Takt.</p><p>Bitte planen Sie mehr Zeit ein. Ersatzverkehr mit Bussen (SEV) ist eingerichtet.</p><ul><li>Haltestelle Goetheplatz: Ersatzhaltestelle in der Lindwurmstra&#223;e</li><li>Haltestelle Poccistra&szlig;e: kein Halt</li></ul>",
+  "publication": 1791388800000,
+  "validFrom": 1791471600000,
+  "validTo": 1792339200000,
+  "type": "SCHEDULE_CHANGE",
+  "provider": "MVG",
+  "links": [],
+  "lines": [
+   {
+    "label": "U3",
+    "transportType": "UBAHN",
+    "network": "swm",
+    "divaId": "010U3",
+    "sev": false
+   },
+   {
+    "label": "U6",
+    "transportType": "UBAHN",
+    "network": "swm",
+    "divaId": "010U6",
+    "sev": false
+   }
+  ],
+  "stationGlobalIds": [
+   "de:09162:2",
+   "de:09162:500"
+  ]
+ },
+ {
+  "title": "Tram 23: Umleitung wegen Veranstaltung",
+  "description": "<p>Die Tram 23 wird umgeleitet.</p>",
+  "validFrom": 1791216000000,
+  "validTo": 1791474600000,
+  "type": "INCIDENT",
+  "lines": [
+   {
+    "label": "23",
+    "transportType": "TRAM"
+   }
+  ]
+ },
+ {
+  "title": "Bus 100: Haltestellenverlegung",
+  "description": "<p>Haltestelle verlegt.</p>",
+  "validFrom": 1791471600000,
+  "validTo": 1791478800000,
+  "type": "INCIDENT",
+  "lines": [
+   {
+    "label": "100",
+    "transportType": "BUS"
+   }
+  ]
+ },
+ {
+  "title": "S6: Signalstörung bei Gauting",
+  "description": "Verspätungen von bis zu 10 Minuten. Grund: Reparatur an einem Signal.",
+  "validFrom": 1791474000000,
+  "type": "INCIDENT",
+  "lines": [
+   {
+    "label": "S6",
+    "transportType": "SBAHN"
+   }
+  ]
+ },
+ {
+  "title": "Tram 23 (Bus-Linie gleicher Nummer, darf nicht passen)",
+  "description": "x",
+  "validFrom": 1791475140000,
+  "validTo": 1791475260000,
+  "lines": [
+   {
+    "label": "23",
+    "transportType": "BUS"
+   }
+  ]
+ },
+ {
+  "title": "U3/U6: Eingeschränkter Betrieb am Abend",
+  "description": "duplicate title",
+  "validFrom": 1791475140000,
+  "lines": [
+   {
+    "label": "U6",
+    "transportType": "UBAHN"
+   }
+  ]
+ }
+]
