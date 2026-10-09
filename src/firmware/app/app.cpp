@@ -31,6 +31,7 @@ constexpr uint32_t kNightWakeMs = 30 * 1000;
 constexpr uint32_t kResetHoldShowMs = 2000;
 constexpr uint32_t kResetCalibrateMs = 3000;
 constexpr uint32_t kResetFactoryMs = 10000;
+constexpr uint32_t kBootStuckMs = 30000;  // longer than this: stuck pin, not a person
 
 ui::BandRenderer renderer;
 ui::ViewModel vm;
@@ -190,16 +191,26 @@ void runCalibration() {
 void handleBootButton() {
   uint32_t released = 0;
   uint32_t held = hw::bootHeldMs(&released);
+  if (held >= kBootStuckMs) {
+    LOGW("BOOT held > %lus - treating as stuck, ignored until released",
+         (unsigned long)(kBootStuckMs / 1000));
+    hw::bootDisarm();
+    bootHold = false;
+    return;
+  }
   if (held >= kResetHoldShowMs) {
     bootHold = true;
     lastActivity = millis();
     vm.resetSeconds = held >= kResetFactoryMs ? 0 : (int)((kResetFactoryMs - held + 999) / 1000);
-    vm.resetReleaseToCalibrate = held >= kResetCalibrateMs;
-    if (held >= kResetFactoryMs) factoryReset();
+    vm.resetReleaseToCalibrate = held >= kResetCalibrateMs && held < kResetFactoryMs;
+    vm.resetReleaseToErase = held >= kResetFactoryMs;
   }
+  // Actions happen on RELEASE only, never while the button is still down.
   if (released) {
     bootHold = false;
-    if (released >= kResetCalibrateMs && released < kResetFactoryMs) runCalibration();
+    LOGI("BOOT released after %lu ms", (unsigned long)released);
+    if (released >= kResetFactoryMs) factoryReset();
+    else if (released >= kResetCalibrateMs) runCalibration();
   }
 }
 
@@ -375,7 +386,8 @@ void loop() {
   uint32_t s = sig({(uint32_t)screen, (uint32_t)epoch, dataVersion, settingsVersion,
                     (uint32_t)anim, (uint32_t)vm.messageIndex, (uint32_t)vm.messagePage,
                     (uint32_t)vm.wifiDown, (uint32_t)vm.resetSeconds,
-                    (uint32_t)vm.resetReleaseToCalibrate, (uint32_t)net, (uint32_t)timeValid});
+                    (uint32_t)vm.resetReleaseToCalibrate, (uint32_t)vm.resetReleaseToErase,
+                    (uint32_t)net, (uint32_t)timeValid});
   if (s != lastSig) {
     lastSig = s;
     ui::fillFromSnapshot(vm, settings, data, epoch, timeValid);

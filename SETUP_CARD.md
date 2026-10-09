@@ -41,6 +41,6 @@
 
 ### Hilfe · Help
 **DE** Neues WLAN/Router? Auf „Kein WLAN“ lange drücken – der Einrichtungs-Hotspot startet wieder.
-Alles löschen und neu einrichten: lange drücken → „Zurücksetzen …“ → „Löschen“ gedrückt halten (oder **BOOT** auf der Rückseite 10 Sekunden halten).
+Alles löschen und neu einrichten: lange drücken → „Zurücksetzen …“ → „Löschen“ gedrückt halten (oder **BOOT** auf der Rückseite 10 Sekunden halten, dann loslassen).
 **EN** New Wi-Fi/router? Press and hold the “No Wi-Fi” screen – the setup hotspot starts again.
-Erase everything and set up again: press and hold → “Reset…” → hold “Erase” (or hold **BOOT** on the back for 10 seconds).
+Erase everything and set up again: press and hold → “Reset…” → hold “Erase” (or hold **BOOT** on the back for 10 seconds, then release).

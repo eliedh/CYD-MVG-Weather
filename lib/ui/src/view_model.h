@@ -67,6 +67,7 @@ struct ViewModel {
   int animPhase = 0;     // increments for the activity dots
   int resetSeconds = 0;  // ResetHold countdown
   bool resetReleaseToCalibrate = false;
+  bool resetReleaseToErase = false;
   const char* noticeTitle = nullptr;
   const char* noticeBody = nullptr;
 };

@@ -210,6 +210,19 @@ Consequences:
   `pio run` needs no extra Python packages.
 - No license file was added – that is the owner's choice.
 
+## 9b. BOOT button safety (found on the first hardware test)
+
+- On the first real board the device showed the reset countdown right after
+  boot and reset itself in a loop: GPIO0 read LOW continuously. GPIO0 is also
+  wired to the CH340 auto-reset circuit, so a serial monitor holding DTR/RTS
+  can pull it low. Fixes:
+  - the button is ignored until it has been seen **released** for 300 ms after
+    boot (a pin that is low from power-on never triggers anything);
+  - actions happen on **release** only (3–10 s → calibration, 10–30 s →
+    factory reset); at 10 s the screen says "release now: erase everything";
+  - held > 30 s → treated as stuck, ignored until released;
+  - `monitor_rts = 0`, `monitor_dtr = 0` in `platformio.ini`.
+
 ## 10. Known gaps / not done
 
 - No EFA fallback provider (MVG could not be evaluated).

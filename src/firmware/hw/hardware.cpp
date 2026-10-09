@@ -1,5 +1,6 @@
 #include "hardware.h"
 
+#include "../app/log.h"
 #include "board_config.h"
 
 namespace hw {
@@ -74,13 +75,48 @@ Touch pollTouch() {
   return t;
 }
 
+static bool s_bootArmed = false;
+static bool s_bootWasDown = false;
+
+void bootDisarm() {
+  s_bootArmed = false;
+  s_bootWasDown = false;
+}
+
 uint32_t bootHeldMs(uint32_t* releasedAfterMs) {
   static uint32_t downAt = 0;
-  static bool wasDown = false;
+  static uint32_t highSince = 0;
+  static bool warned = false;
+  bool& wasDown = s_bootWasDown;
   bool down = digitalRead(PIN_BOOT_BUTTON) == LOW;
   uint32_t now = millis();
   if (releasedAfterMs) *releasedAfterMs = 0;
-  if (down && !wasDown) downAt = now;
+
+  // GPIO0 is also wired to the USB-serial auto-reset circuit: some serial
+  // monitors hold it LOW while the port is open. The button only counts after
+  // it has been seen released for 300 ms, so a pin that is low from power-on
+  // (or stuck) can never trigger anything.
+  if (!s_bootArmed) {
+    if (down) {
+      highSince = 0;
+      if (!warned) {
+        warned = true;
+        LOGW("BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)");
+      }
+      return 0;
+    }
+    if (!highSince) highSince = now;
+    if (now - highSince < 300) return 0;
+    s_bootArmed = true;
+    wasDown = false;
+    warned = false;
+    LOGI("BOOT button armed");
+  }
+
+  if (down && !wasDown) {
+    downAt = now;
+    LOGI("BOOT button pressed");
+  }
   if (!down && wasDown && releasedAfterMs) *releasedAfterMs = now - downAt;
   wasDown = down;
   return down ? now - downAt : 0;

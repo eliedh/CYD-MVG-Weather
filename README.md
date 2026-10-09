@@ -180,7 +180,11 @@ Detail screens return to the board automatically after 30 s.
 |---|---|
 | 2 s | countdown appears |
 | release between 3 and 10 s | touch calibration |
-| 10 s | factory reset and restart |
+| 10 s, then release | factory reset and restart (the screen says "release now") |
+
+The button only counts after it has been seen released once after power-on,
+and presses longer than 30 s are ignored as a stuck pin – GPIO0 is wired to the
+USB-serial auto-reset circuit, and some serial monitors hold it low.
 
 ### Starting over (new owner / new setup)
 Three ways to erase **everything** – Wi-Fi, stops, settings, touch calibration
@@ -188,7 +192,7 @@ and the whole NVS flash partition – after which the device restarts into the
 setup hotspot exactly like a new unit:
 1. On the device: long-press anywhere → **Reset…** → press and hold **Erase**.
 2. Settings page → **Erase everything & set up again**.
-3. Hold **BOOT** for 10 s (works even without Wi-Fi or touch).
+3. Hold **BOOT** for 10 s, then release (works even without Wi-Fi or touch).
 
 ### Which page is reachable when
 | Page | Reachable | How |

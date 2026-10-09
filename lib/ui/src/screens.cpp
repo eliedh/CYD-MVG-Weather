@@ -523,6 +523,11 @@ void drawBoot(Painter& p, const ViewModel& vm) {
 
 void drawResetHold(Painter& p, const ViewModel& vm) {
   char b[64];
+  if (vm.resetReleaseToErase) {
+    icons::warning(p, kW / 2 - 22, 60, 44, kDanger, kBg);
+    centeredWrapped(p, T(vm, Str::ResetReleaseErase), 146, 28, fonts::title(), kDanger, kW - 60);
+    return;
+  }
   snprintf(b, sizeof(b), "%d", vm.resetSeconds);
   centeredText(p, b, 116, fonts::big(), kWarn);
   snprintf(b, sizeof(b), T(vm, Str::ResetHold), vm.resetSeconds);

@@ -55,6 +55,7 @@ namespace core {
   X(PageOf,            "%d / %d",                                      "%d / %d") \
   X(TapNext,           "Tippen für mehr",                              "Tap for more") \
   X(ResetHold,         "Halten zum Zurücksetzen … %d",                 "Keep holding to reset… %d") \
+  X(ResetReleaseErase, "Jetzt loslassen: alles löschen",               "Release now: erase everything") \
   X(ResetRelease,      "Jetzt loslassen: Touch kalibrieren",           "Release now: calibrate touch") \
   X(ResetButton,       "Zurücksetzen …",                               "Reset…") \
   X(ResetAskTitle,     "Alles zurücksetzen?",                          "Reset everything?") \

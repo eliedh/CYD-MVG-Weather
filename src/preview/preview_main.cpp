@@ -233,6 +233,11 @@ int main(int argc, char** argv) {
   vm.resetSeconds = 4;
   vm.resetReleaseToCalibrate = true;
   render(renderer, full, vm, "25_reset_hold");
+  vm.resetSeconds = 0;
+  vm.resetReleaseToCalibrate = false;
+  vm.resetReleaseToErase = true;
+  render(renderer, full, vm, "25b_reset_release_erase");
+  vm.resetReleaseToErase = false;
   vm.screen = ui::Screen::CalibrateIntro;
   render(renderer, full, vm, "26_calibrate_intro");
   vm.screen = ui::Screen::Boot;

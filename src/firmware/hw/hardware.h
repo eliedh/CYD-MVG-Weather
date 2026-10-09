@@ -23,7 +23,10 @@ Touch pollTouch();
 
 // ---- BOOT button: returns how long it has been held (ms), 0 if released.
 // `releasedAfterMs` is set once when the button is released.
+// The button is ignored until it has been seen released after boot.
 uint32_t bootHeldMs(uint32_t* releasedAfterMs);
+// Ignore the button until it is released again (used when it looks stuck).
+void bootDisarm();
 
 // ---- LDR: 0 (bright) .. 4095 (dark). Averaged.
 int readLdrRaw();
