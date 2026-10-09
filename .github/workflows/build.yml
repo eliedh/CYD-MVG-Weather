@@ -57,6 +57,7 @@ jobs:
           B=.pio/build/${{ matrix.env }}
           cp $B/firmware-merged.bin dist/${{ matrix.env }}-merged-0x0.bin
           cp $B/firmware.bin       dist/${{ matrix.env }}-app-0x10000.bin
+          cp $B/firmware.elf       dist/${{ matrix.env }}-firmware.elf   # for decoding crash backtraces
           cp $B/bootloader.bin     dist/${{ matrix.env }}-bootloader-0x1000.bin
           cp $B/partitions.bin     dist/${{ matrix.env }}-partitions-0x8000.bin
           cp ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin dist/boot_app0-0xe000.bin
