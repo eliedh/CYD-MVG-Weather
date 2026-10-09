@@ -27,6 +27,10 @@ bool parseDepartures(ByteSource& in, uint8_t stopIndex, StopDepartures& out);
 bool parseMessages(ByteSource& in, const std::vector<LineKey>& lines, int64_t now,
                    ServiceMessage* out, int maxOut, int& count);
 
+// Human-readable reason for the last failed parse in this module (for logs),
+// e.g. "element 3: NoMemory" or "no JSON array found (starts with '<')".
+const char* lastParseError();
+
 // Epoch value that may be in milliseconds or seconds -> seconds.
 int64_t toEpochSeconds(int64_t v);
 

@@ -7,6 +7,9 @@
 
 namespace core {
 
+static char g_parseError[64] = "";
+const char* lastParseError() { return g_parseError; }
+
 int64_t toEpochSeconds(int64_t v) {
   // Anything beyond year ~5000 in seconds is certainly milliseconds.
   return v > 100000000000LL ? v / 1000 : v;
@@ -48,6 +51,7 @@ template <typename Doc, typename Filter, typename Fn>
 bool forEachArrayElement(ByteSource& in, Doc& doc, const Filter& filter, Fn&& fn) {
   // Find the opening '[' of the first array (tolerates a wrapping object such
   // as {"departures":[...]} from older API versions).
+  g_parseError[0] = 0;
   int c = in.nextNonSpace();
   if (c == '[') {
     c = in.nextNonSpace();
@@ -55,10 +59,15 @@ bool forEachArrayElement(ByteSource& in, Doc& doc, const Filter& filter, Fn&& fn
   } else if (c == '{') {
     // Wrapped: use the first non-empty array of objects.
     do {
-      if (!in.skipPast('[')) return false;
+      if (!in.skipPast('[')) {
+        snprintf(g_parseError, sizeof(g_parseError), "object without a non-empty array");
+        return false;
+      }
       c = in.nextNonSpace();
     } while (c != '{');
   } else {
+    snprintf(g_parseError, sizeof(g_parseError), "no JSON array found (starts with '%c', %d)",
+             c > 31 && c < 127 ? c : '?', c);
     return false;
   }
   // We consumed the first char of the first element; push it back by
@@ -87,15 +96,23 @@ bool forEachArrayElement(ByteSource& in, Doc& doc, const Filter& filter, Fn&& fn
   } replay(in, c);
 
   ByteSource* src = &replay;
+  int index = 0;
   for (;;) {
     doc.clear();
     DeserializationError err =
         deserializeJson(doc, *src, DeserializationOption::Filter(filter),
                         DeserializationOption::NestingLimit(12));
-    if (err) return false;
+    if (err) {
+      snprintf(g_parseError, sizeof(g_parseError), "element %d: %s", index, err.c_str());
+      return false;
+    }
     if (doc.template is<JsonObject>()) fn(doc.template as<JsonObjectConst>());
+    index++;
     int sep = src->nextNonSpace();
     if (sep == ',') continue;
+    if (sep != ']')
+      snprintf(g_parseError, sizeof(g_parseError), "element %d: unexpected '%c' (%d) after it",
+               index - 1, sep > 31 && sep < 127 ? sep : '?', sep);
     return sep == ']';
   }
 }

@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
+#include "mvg_parser.h"
+
 namespace {
 
 // Adapts an Arduino Stream. Uses the timed readBytes() so a slow network
@@ -59,7 +61,7 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
   if (code == HTTP_CODE_OK) {
     StreamSource src(http.getStream());
     ok = consume(src);
-    if (!ok) LOGW("parse failed for %s", url);
+    if (!ok) LOGW("parse failed for %s: %s", url, core::lastParseError());
   } else {
     LOGW("HTTP %d for %s", code, url);
   }
