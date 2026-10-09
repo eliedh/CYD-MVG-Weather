@@ -146,15 +146,18 @@ void test_messages_filter_by_line_and_validity() {
   int n = 0;
   TEST_ASSERT_TRUE(parseMessages(src, lines, FIXTURE_NOW, msgs, kMaxMessages, n));
   // U3/U6 (valid), S6 (no validTo). Tram 23 expired; bus 23 type mismatch;
-  // bus 100 not displayed; duplicate title dropped.
+  // bus 100 not displayed; duplicate title dropped. The S6 INCIDENT is
+  // listed before the U3/U6 SCHEDULE_CHANGE.
   TEST_ASSERT_EQUAL(2, n);
-  TEST_ASSERT_EQUAL_STRING("U3/U6: Eingeschränkter Betrieb am Abend", msgs[0].title);
-  TEST_ASSERT_EQUAL_STRING("U3", msgs[0].lines);
-  TEST_ASSERT_NOT_NULL(strstr(msgs[0].text, "„Implerstraße“"));
-  TEST_ASSERT_NOT_NULL(strstr(msgs[0].text, "26. Oktober"));
-  TEST_ASSERT_NOT_NULL(strstr(msgs[0].text, "Lindwurmstraße"));
-  TEST_ASSERT_NULL(strstr(msgs[0].text, "<"));
-  TEST_ASSERT_EQUAL_STRING("S6", msgs[1].lines);
+  TEST_ASSERT_EQUAL_STRING("S6", msgs[0].lines);
+  TEST_ASSERT_TRUE(msgs[0].incident);
+  TEST_ASSERT_EQUAL_STRING("U3/U6: Eingeschränkter Betrieb am Abend", msgs[1].title);
+  TEST_ASSERT_FALSE(msgs[1].incident);
+  TEST_ASSERT_EQUAL_STRING("U3", msgs[1].lines);
+  TEST_ASSERT_NOT_NULL(strstr(msgs[1].text, "„Implerstraße“"));
+  TEST_ASSERT_NOT_NULL(strstr(msgs[1].text, "26. Oktober"));
+  TEST_ASSERT_NOT_NULL(strstr(msgs[1].text, "Lindwurmstraße"));
+  TEST_ASSERT_NULL(strstr(msgs[1].text, "<"));
 }
 
 void test_messages_max_out() {
@@ -167,6 +170,22 @@ void test_messages_max_out() {
   int n = 0;
   TEST_ASSERT_TRUE(parseMessages(src, lines, FIXTURE_NOW, msgs, 1, n));
   TEST_ASSERT_EQUAL(1, n);
+}
+
+void test_messages_incident_wins_when_full() {
+  std::string j = readFixture("mvg_messages.json");
+  MemorySource src(j);
+  std::vector<LineKey> lines(2);
+  strcpy(lines[0].label, "U3");  // schedule change, listed first in the feed
+  lines[0].type = TransportType::UBahn;
+  strcpy(lines[1].label, "S6");  // incident, later in the feed
+  lines[1].type = TransportType::SBahn;
+  ServiceMessage msgs[1];
+  int n = 0;
+  TEST_ASSERT_TRUE(parseMessages(src, lines, FIXTURE_NOW, msgs, 1, n));
+  TEST_ASSERT_EQUAL(1, n);
+  TEST_ASSERT_TRUE(msgs[0].incident);
+  TEST_ASSERT_EQUAL_STRING("S6", msgs[0].lines);
 }
 
 // ---------------------------------------------------------------- weather
@@ -295,6 +314,7 @@ int main(int, char**) {
   RUN_TEST(test_departures_limit_and_long_names);
   RUN_TEST(test_messages_filter_by_line_and_validity);
   RUN_TEST(test_messages_max_out);
+  RUN_TEST(test_messages_incident_wins_when_full);
   RUN_TEST(test_openmeteo);
   RUN_TEST(test_openmeteo_missing_blocks);
   RUN_TEST(test_html_to_text);

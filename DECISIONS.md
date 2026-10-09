@@ -245,6 +245,18 @@ Consequences:
   The log prints heap/largest block before and heap/min/stack after every
   request, so the remaining headroom is visible.
 
+## 9d. Reading large responses (found on hardware)
+
+- The 380 kB messages feed stopped after exactly 7616 bytes on the device:
+  `NetworkClient` declares its own `_timeout`, so `HTTPClient::setTimeout()`
+  never reaches `Stream::_timeout`, and `Stream::readBytes()` gives up after the
+  default **1 s** whenever the server pauses. The firmware now reads the body
+  itself (`available()`/`read()` in 512-byte chunks) and only stops when the
+  server closed the connection or nothing arrived for 10 s.
+- The real feed has 306 messages: 299 long-running schedule changes and 7
+  incidents. With a cap of 4, **incidents now win**: a later incident replaces
+  a schedule change, and incidents are listed first (banner = most important).
+
 ## 10. Known gaps / not done
 
 - No EFA fallback provider (MVG could not be evaluated).

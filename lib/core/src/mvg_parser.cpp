@@ -217,8 +217,26 @@ bool parseDepartures(ByteSource& in, uint8_t stopIndex, StopDepartures& out) {
 
 // --- messages --------------------------------------------------------------
 
+static bool parseMessagesRaw(ByteSource& in, const std::vector<LineKey>& lines, int64_t now,
+                             ServiceMessage* out, int maxOut, int& count);
+
 bool parseMessages(ByteSource& in, const std::vector<LineKey>& lines, int64_t now,
                    ServiceMessage* out, int maxOut, int& count) {
+  bool ok = parseMessagesRaw(in, lines, now, out, maxOut, count);
+  // Incidents first, otherwise keep the feed's order (insertion sort: stable,
+  // no allocation, at most kMaxMessages elements).
+  for (int i = 1; i < count; i++) {
+    for (int j = i; j > 0 && out[j].incident && !out[j - 1].incident; j--) {
+      ServiceMessage tmp = out[j];
+      out[j] = out[j - 1];
+      out[j - 1] = tmp;
+    }
+  }
+  return ok;
+}
+
+static bool parseMessagesRaw(ByteSource& in, const std::vector<LineKey>& lines, int64_t now,
+                             ServiceMessage* out, int maxOut, int& count) {
   JsonDocument filter;
   for (const char* k : {"title", "description", "text", "validFrom", "validTo", "type"})
     filter[k] = true;
@@ -228,7 +246,8 @@ bool parseMessages(ByteSource& in, const std::vector<LineKey>& lines, int64_t no
   JsonDocument doc;
   count = 0;
   return forEachArrayElement(in, doc, filter, [&](JsonObjectConst o) {
-    if (count >= maxOut) return;
+    // (no early exit when full: a later INCIDENT may still replace a
+    // schedule change)
     int64_t from = toEpochSeconds(num(o, "validFrom"));
     int64_t to = toEpochSeconds(num(o, "validTo"));
     if (from && now && now < from) return;
@@ -253,14 +272,30 @@ bool parseMessages(ByteSource& in, const std::vector<LineKey>& lines, int64_t no
 
     const char* title = str(o, "title");
     if (!title || !*title) return;
+    char tclean[sizeof(out[0].title)];
+    htmlToText(title, tclean, sizeof(tclean));
     for (int i = 0; i < count; i++)
-      if (strcmp(out[i].title, title) == 0) return;  // duplicate (same text per line)
+      if (strcmp(out[i].title, tclean) == 0) return;  // duplicate (same text per line)
 
-    ServiceMessage& m = out[count++];
+    // Incidents (actual disruptions) win over the many long-running schedule
+    // changes: when full, an incident replaces the last schedule change.
+    const char* type = str(o, "type");
+    bool incident = type && strcasecmp(type, "INCIDENT") == 0;
+    int slot = -1;
+    if (count < maxOut) {
+      slot = count++;
+    } else if (incident) {
+      for (int i = count - 1; i >= 0; i--)
+        if (!out[i].incident) {
+          slot = i;
+          break;
+        }
+    }
+    if (slot < 0) return;
+    ServiceMessage& m = out[slot];
     m = ServiceMessage();
-    char tbuf[sizeof(m.title)];
-    htmlToText(title, tbuf, sizeof(tbuf));
-    copyUtf8(m.title, sizeof(m.title), tbuf);
+    m.incident = incident;
+    copyUtf8(m.title, sizeof(m.title), tclean);
     htmlToText(str(o, "description", "text"), m.text, sizeof(m.text));
     copyUtf8(m.lines, sizeof(m.lines), matched);
     m.validFrom = from;

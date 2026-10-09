@@ -20,6 +20,10 @@ All times are relative to `FIXTURE_NOW = 1791475200` (2026-10-08 18:00 CEST).
 
 ## Real captures
 
+`real/mvg_messages.json` is a genuine capture of the messages feed from
+2026-10-09 (306 messages, 380 kB, provided by the owner). `test_real_fixtures`
+parses it in 3-byte chunks and checks the incident-first selection.
+
 Run `tools/fetch_fixtures.sh` on a machine with internet access. It writes
 `test/fixtures/real/*.json`. The test `test_real_fixtures` parses them if they
 exist (and is skipped otherwise), checking that the parsers find plausible

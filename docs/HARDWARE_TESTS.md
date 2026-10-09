@@ -7,7 +7,7 @@
 | 3 | Stop search (first HTTPS, was OOM crash) | ✅ fixed, works |
 | 4 | Departures + weather from the real APIs | ✅ works |
 | 5 | Buses missing at "Gautinger Straße" (Stockdorf) | ✅ fixed (explicit `transportTypes`), regional buses show |
-| 6 | Service messages: `parse failed …: element 5: IncompleteInput` (stream ends mid-element, ~1.2 s) | 🔍 diagnostics pushed (headers, bytes read, last bytes); or run `tools/fetch_fixtures.sh` |
+| 6 | Service messages: stream stopped after 7616 bytes (1 s Stream timeout) | 🔧 fix pushed (own reader, 10 s stall timeout); real 380 kB feed parses in tests – verify banner on device |
 | 7 | LDR: `LDR raw=` values in the dark (bright reads 0) | ⏳ to do |
 | 8 | Touch: header → forecast, long-press → settings QR, reset Cancel, calibration | ⏳ to do |
 | 9 | Night mode dim/dark + tap-to-wake | ⏳ to do |

@@ -71,6 +71,7 @@ struct ServiceMessage {
   char text[640] = {0};         // tags stripped, whitespace collapsed
   char lines[48] = {0};         // affected displayed lines, "U3, U6"
   int64_t validFrom = 0, validTo = 0;
+  bool incident = false;  // type INCIDENT (disruption) vs SCHEDULE_CHANGE
 };
 
 enum class WeatherIcon : uint8_t {

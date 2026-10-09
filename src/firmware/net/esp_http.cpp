@@ -9,24 +9,27 @@
 
 namespace {
 
-// Adapts an Arduino Stream. Uses the timed readBytes() so a slow network
-// does not look like the end of the data. Keeps a byte count and the last
-// bytes read, so a failed parse can be diagnosed from the serial log.
-class StreamSource : public core::ByteSource {
+// Reads the response body straight from the network client, in chunks.
+//
+// Not Stream::readBytes(): NetworkClient declares its own _timeout, so
+// HTTPClient::setTimeout() never reaches Stream::_timeout, which stays at the
+// Arduino default of 1 s. Large responses (the 380 kB messages feed) pause
+// for longer than that after the first ~8 kB, and the stream "ended" there.
+// Here we wait up to kStallMs for new data and only stop when the server has
+// closed the connection and everything was read.
+//
+// Also keeps a byte count and the last bytes read for diagnostics.
+class ClientSource : public core::ByteSource {
  public:
-  explicit StreamSource(Stream& s) : s_(s) {}
+  explicit ClientSource(NetworkClient& c) : c_(c) {}
   int read() override {
-    char c;
-    if (s_.readBytes(&c, 1) != 1) return -1;
-    remember(c);
+    if (pos_ >= len_ && !fill()) return -1;
+    char c = (char)buf_[pos_++];
+    ring_[total_++ % kTail] = c;
     return (unsigned char)c;
   }
-  size_t readBytes(char* buf, size_t len) override {
-    size_t n = s_.readBytes(buf, len);
-    for (size_t i = 0; i < n; i++) remember(buf[i]);
-    return n;
-  }
   size_t total() const { return total_; }
+  bool stalled() const { return stalled_; }
   // Last bytes read, oldest first, non-printable bytes shown as '.'.
   void tail(char* out, size_t size) const {
     size_t n = total_ < kTail ? total_ : kTail;
@@ -40,9 +43,35 @@ class StreamSource : public core::ByteSource {
 
  private:
   static constexpr size_t kTail = 120;
-  void remember(char c) { ring_[total_++ % kTail] = c; }
-  Stream& s_;
+  static constexpr uint32_t kStallMs = 10000;
+
+  bool fill() {
+    uint32_t start = millis();
+    for (;;) {
+      int avail = c_.available();
+      if (avail > 0) {
+        int n = c_.read(buf_, avail < (int)sizeof(buf_) ? avail : (int)sizeof(buf_));
+        if (n > 0) {
+          pos_ = 0;
+          len_ = (size_t)n;
+          return true;
+        }
+      } else if (!c_.connected()) {
+        return false;  // server closed the connection: real end of data
+      }
+      if (millis() - start > kStallMs) {
+        stalled_ = true;
+        return false;
+      }
+      delay(2);
+    }
+  }
+
+  NetworkClient& c_;
+  uint8_t buf_[512];
+  size_t pos_ = 0, len_ = 0;
   size_t total_ = 0;
+  bool stalled_ = false;
   char ring_[kTail] = {0};
 };
 
@@ -83,21 +112,22 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
   lastStatus_ = code;
   bool ok = false;
   if (code == HTTP_CODE_OK) {
-    StreamSource src(http.getStream());
+    ClientSource src(http.getStream());
     ok = consume(src);
     if (!ok) {
       char tail[121];
       src.tail(tail, sizeof(tail));
       LOGW("parse failed for %s: %s", url, core::lastParseError());
-      LOGW("  read %u bytes, Content-Length %d, Transfer-Encoding '%s', Content-Encoding '%s', "
+      LOGW("  read %u bytes%s, Content-Length %d, Transfer-Encoding '%s', Content-Encoding '%s', "
            "Content-Type '%s'",
-           (unsigned)src.total(), http.getSize(), http.header("Transfer-Encoding").c_str(),
+           (unsigned)src.total(), src.stalled() ? " (stalled >10 s)" : "", http.getSize(), http.header("Transfer-Encoding").c_str(),
            http.header("Content-Encoding").c_str(), http.header("Content-Type").c_str());
       LOGW("  last bytes: %s", tail);
     }
   } else {
     LOGW("HTTP %d for %s", code, url);
   }
+  else if (ok && src.total() > 20000) LOGI("  read %u bytes", (unsigned)src.total());
   http.end();
   LOGI("  -> %d (%lu ms, heap %u, min %u, stack left %u)", code,
        (unsigned long)(millis() - t0), (unsigned)ESP.getFreeHeap(),
