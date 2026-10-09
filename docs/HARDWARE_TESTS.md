@@ -6,8 +6,8 @@
 | 2 | Setup hotspot + captive portal + Wi-Fi join | ✅ works |
 | 3 | Stop search (first HTTPS, was OOM crash) | ✅ fixed, works |
 | 4 | Departures + weather from the real APIs | ✅ works |
-| 5 | Buses missing at "Gautinger Straße" (Stockdorf) | 🔧 fix pushed (explicit `transportTypes`), to verify |
-| 6 | Service messages: `parse failed for …/messages` | ⏳ needs the real response (`tools/fetch_fixtures.sh`) or the new error line |
+| 5 | Buses missing at "Gautinger Straße" (Stockdorf) | ✅ fixed (explicit `transportTypes`), regional buses show |
+| 6 | Service messages: `parse failed …: element 5: IncompleteInput` (stream ends mid-element, ~1.2 s) | 🔍 diagnostics pushed (headers, bytes read, last bytes); or run `tools/fetch_fixtures.sh` |
 | 7 | LDR: `LDR raw=` values in the dark (bright reads 0) | ⏳ to do |
 | 8 | Touch: header → forecast, long-press → settings QR, reset Cancel, calibration | ⏳ to do |
 | 9 | Night mode dim/dark + tap-to-wake | ⏳ to do |

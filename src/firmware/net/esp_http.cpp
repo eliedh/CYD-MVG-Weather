@@ -10,18 +10,40 @@
 namespace {
 
 // Adapts an Arduino Stream. Uses the timed readBytes() so a slow network
-// does not look like the end of the data.
+// does not look like the end of the data. Keeps a byte count and the last
+// bytes read, so a failed parse can be diagnosed from the serial log.
 class StreamSource : public core::ByteSource {
  public:
   explicit StreamSource(Stream& s) : s_(s) {}
   int read() override {
     char c;
-    return s_.readBytes(&c, 1) == 1 ? (unsigned char)c : -1;
+    if (s_.readBytes(&c, 1) != 1) return -1;
+    remember(c);
+    return (unsigned char)c;
   }
-  size_t readBytes(char* buf, size_t len) override { return s_.readBytes(buf, len); }
+  size_t readBytes(char* buf, size_t len) override {
+    size_t n = s_.readBytes(buf, len);
+    for (size_t i = 0; i < n; i++) remember(buf[i]);
+    return n;
+  }
+  size_t total() const { return total_; }
+  // Last bytes read, oldest first, non-printable bytes shown as '.'.
+  void tail(char* out, size_t size) const {
+    size_t n = total_ < kTail ? total_ : kTail;
+    if (n > size - 1) n = size - 1;
+    for (size_t i = 0; i < n; i++) {
+      char c = ring_[(total_ - n + i) % kTail];
+      out[i] = (c >= 32 && c < 127) ? c : '.';
+    }
+    out[n] = 0;
+  }
 
  private:
+  static constexpr size_t kTail = 120;
+  void remember(char c) { ring_[total_++ % kTail] = c; }
   Stream& s_;
+  size_t total_ = 0;
+  char ring_[kTail] = {0};
 };
 
 }  // namespace
@@ -55,13 +77,24 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
     return false;
   }
   http.addHeader("Accept", "application/json");
+  const char* keys[] = {"Transfer-Encoding", "Content-Encoding", "Content-Type"};
+  http.collectHeaders(keys, 3);
   int code = http.GET();
   lastStatus_ = code;
   bool ok = false;
   if (code == HTTP_CODE_OK) {
     StreamSource src(http.getStream());
     ok = consume(src);
-    if (!ok) LOGW("parse failed for %s: %s", url, core::lastParseError());
+    if (!ok) {
+      char tail[121];
+      src.tail(tail, sizeof(tail));
+      LOGW("parse failed for %s: %s", url, core::lastParseError());
+      LOGW("  read %u bytes, Content-Length %d, Transfer-Encoding '%s', Content-Encoding '%s', "
+           "Content-Type '%s'",
+           (unsigned)src.total(), http.getSize(), http.header("Transfer-Encoding").c_str(),
+           http.header("Content-Encoding").c_str(), http.header("Content-Type").c_str());
+      LOGW("  last bytes: %s", tail);
+    }
   } else {
     LOGW("HTTP %d for %s", code, url);
   }
