@@ -8,7 +8,7 @@
 | 4 | Departures + weather from the real APIs | ✅ works |
 | 5 | Buses missing at "Gautinger Straße" (Stockdorf) | ✅ fixed (explicit `transportTypes`), regional buses show |
 | 6 | Service messages: stream stopped after 7616 bytes (1 s Stream timeout) | ✅ fixed – full 389 kB feed read in ~4 s on the device |
-| 6b | Departure list paging: tap list → pages 2–4, dots, back to page 1 after 20 s | ⏳ to verify |
+| 6b | Departure list paging: tap list → pages 2–4, dots, back to page 1 after 20 s | ✅ works |
 | 7 | LDR: `LDR raw=` values in the dark (bright reads 0) | ⏳ to do |
 | 8 | Touch: header → forecast, long-press → settings QR, reset Cancel, calibration | ⏳ to do |
 | 9 | Night mode dim/dark + tap-to-wake | ⏳ to do |
