@@ -7,6 +7,7 @@
 
 #include "../app/shared.h"
 #include "../web/web_assets.h"
+#include "../app/diag.h"
 #include "board_config.h"
 
 namespace web {
@@ -118,6 +119,7 @@ void handleInfo(AsyncWebServerRequest* r) {
   d["version"] = FIRMWARE_VERSION;
   d["heap"] = ESP.getFreeHeap();
   d["uptime"] = millis() / 1000;
+  d["lastReset"] = diag::lastResetReason();
   std::string s;
   serializeJson(d, s);
   sendJson(r, s);

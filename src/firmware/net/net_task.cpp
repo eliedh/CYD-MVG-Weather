@@ -125,6 +125,9 @@ void stopPortal() {
 void beginSta(const std::string& ssid, const std::string& pass) {
   if (!portalActive) WiFi.mode(WIFI_STA);
   WiFi.setHostname(PRODUCT_HOSTNAME);
+#ifdef WIFI_TX_POWER
+  WiFi.setTxPower(WIFI_TX_POWER);  // lower peak current on weak USB supplies
+#endif
   WiFi.setAutoReconnect(true);
   WiFi.begin(ssid.c_str(), pass.c_str());
   connectStartedAt = millis();
@@ -554,6 +557,7 @@ void task(void*) {
 
 }  // namespace
 
-void start() { xTaskCreatePinnedToCore(task, "net", 16384, nullptr, 1, nullptr, 0); }
+// 20 KB: the TLS handshake (mbedTLS) runs on this task's stack.
+void start() { xTaskCreatePinnedToCore(task, "net", 20480, nullptr, 1, nullptr, 0); }
 
 }  // namespace net

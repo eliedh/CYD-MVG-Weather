@@ -7,6 +7,7 @@
 #include "../net/net_task.h"
 #include "band_renderer.h"
 #include "board_config.h"
+#include "diag.h"
 #include "i18n.h"
 #include "log.h"
 #include "screens.h"
@@ -336,6 +337,9 @@ void setup() {
   delay(50);
   LOGI("%s %s starting (panel %s, invert %d)", PRODUCT_NAME, FIRMWARE_VERSION,
        CYD_PANEL_ST7789 ? "ST7789" : "ILI9341", PANEL_INVERT);
+  LOGI("last reset reason: %s", diag::lastResetReason());
+  if (esp_reset_reason() == ESP_RST_BROWNOUT)
+    LOGW("BROWNOUT: the USB supply dipped. Try another cable/charger (not a PC hub/port).");
   g.mutex = xSemaphoreCreateMutex();
 
   hw::begin();

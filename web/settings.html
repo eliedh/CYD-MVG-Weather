@@ -164,7 +164,7 @@ system:"System",calibrate:"Touch kalibrieren",changeWifi:"WLAN ändern",factoryR
 calStarted:"Folge den Anweisungen auf der Tafel.",confirmWifi:"WLAN-Daten löschen? Die Tafel startet neu und öffnet wieder den Einrichtungs-Hotspot.",
 wifiReset:"Die Tafel startet den Einrichtungs-Hotspot.",confirmReset:"Wirklich alles zurücksetzen? WLAN, Haltestellen und alle Einstellungen werden gelöscht. Danach startet die Tafel neu und öffnet den Einrichtungs-Hotspot wie beim ersten Mal.",resetDone:"Alles gelöscht. Die Tafel startet neu – verbinde dich mit „Abfahrt-Setup-…“ für die neue Einrichtung.",
 save:"Änderungen speichern",saved:"Gespeichert ✓",saveError:"Speichern fehlgeschlagen.",
-online:"Online",updated:"aktualisiert {t}",apiErr:"MVG gerade nicht erreichbar",version:"Firmware",ip:"IP-Adresse",signal:"WLAN-Signal",heap:"Freier Speicher",uptime:"Laufzeit",offline:"Keine Verbindung zur Tafel",sources:"Abfahrten: MVG (inoffizielle Schnittstelle) · Wetter: Open-Meteo.com (CC BY 4.0)"},
+online:"Online",updated:"aktualisiert {t}",apiErr:"MVG gerade nicht erreichbar",version:"Firmware",ip:"IP-Adresse",signal:"WLAN-Signal",heap:"Freier Speicher",uptime:"Laufzeit",offline:"Keine Verbindung zur Tafel",lastReset:"Letzter Neustart",rst_poweron:"Eingesteckt",rst_external:"Reset-Taste",rst_software:"Neustart (Software)",rst_panic:"Absturz",rst_int_wdt:"Watchdog",rst_task_wdt:"Watchdog",rst_wdt:"Watchdog",rst_deepsleep:"Tiefschlaf",rst_brownout:"Unterspannung – anderes Netzteil/Kabel probieren",rst_sdio:"SDIO",rst_unknown:"unbekannt",rst_undefined:"–",sources:"Abfahrten: MVG (inoffizielle Schnittstelle) · Wetter: Open-Meteo.com (CC BY 4.0)"},
 en:{stops:"Stops",addStop:"Add a stop",searchPh:"e.g. Marienplatz",search:"Search",searching:"Searching…",noResults:"Nothing found.",
 searchError:"Search failed. Is the board online?",maxStops:"Up to 4 stops.",noStops:"No stops yet. Search for your stop below.",
 walk:"Walking time",walkHint:"Departures you can no longer reach on foot are shown greyed out.",min:"min",shortName:"Short name",remove:"Remove",linesDirs:"Lines & directions",hiddenN:"{n} hidden",allShown:"all shown",
@@ -179,7 +179,7 @@ system:"System",calibrate:"Calibrate touch",changeWifi:"Change Wi-Fi",factoryRes
 calStarted:"Follow the instructions on the board.",confirmWifi:"Forget the Wi-Fi? The board restarts and opens the setup hotspot again.",
 wifiReset:"The board is starting the setup hotspot.",confirmReset:"Really reset everything? Wi-Fi, stops and all settings will be erased. The board then restarts and opens the setup hotspot like the first time.",resetDone:"Everything erased. The board restarts – join “Abfahrt-Setup-…” to set it up again.",
 save:"Save changes",saved:"Saved ✓",saveError:"Saving failed.",
-online:"Online",updated:"updated {t}",apiErr:"MVG is unreachable right now",version:"Firmware",ip:"IP address",signal:"Wi-Fi signal",heap:"Free memory",uptime:"Uptime",offline:"Can’t reach the board",sources:"Departures: MVG (unofficial API) · Weather: Open-Meteo.com (CC BY 4.0)"}};
+online:"Online",updated:"updated {t}",apiErr:"MVG is unreachable right now",version:"Firmware",ip:"IP address",signal:"Wi-Fi signal",heap:"Free memory",uptime:"Uptime",offline:"Can’t reach the board",lastReset:"Last restart",rst_poweron:"Plugged in",rst_external:"Reset button",rst_software:"Restart (software)",rst_panic:"Crash",rst_int_wdt:"Watchdog",rst_task_wdt:"Watchdog",rst_wdt:"Watchdog",rst_deepsleep:"Deep sleep",rst_brownout:"Low voltage – try another charger/cable",rst_sdio:"SDIO",rst_unknown:"unknown",rst_undefined:"–",sources:"Departures: MVG (unofficial API) · Weather: Open-Meteo.com (CC BY 4.0)"}};
 const TYPES=["UBAHN","SBAHN","TRAM","BUS","REGIONAL_BUS","BAHN"];
 const UC={U1:"#438136",U2:"#C40C37",U3:"#F36E31",U4:"#0AB38D",U5:"#B8740E",U6:"#006CB3",U7:"#438136,#C40C37",U8:"#C40C37,#F36E31"};
 const SC={S1:"#16BAE7",S2:"#76B82A",S3:"#951B81",S4:"#E30613",S5:"#005E82",S6:"#00975F",S7:"#943126",S8:"#1A1A1A",S20:"#F05A73",S27:"#F05A73"};
@@ -335,7 +335,7 @@ function renderStatus(){
   else if(info.lastUpdate){const d=new Date(info.lastUpdate*1000);h+=" · "+t("updated",{t:d.toLocaleTimeString(lang,{hour:"2-digit",minute:"2-digit"})});}
   s.innerHTML=h;
   const up=info.uptime>=86400?Math.floor(info.uptime/86400)+" d":Math.floor(info.uptime/3600)+" h "+Math.floor(info.uptime%3600/60)+" min";
-  $("info").innerHTML="<dt>"+t("version")+"</dt><dd>"+esc(info.version)+"</dd><dt>"+t("ip")+"</dt><dd>"+esc(info.ip)+" · "+esc(info.host)+"</dd><dt>"+t("signal")+"</dt><dd>"+info.rssi+" dBm</dd><dt>"+t("heap")+"</dt><dd>"+Math.round(info.heap/1024)+" kB</dd><dt>"+t("uptime")+"</dt><dd>"+up+"</dd>";
+  $("info").innerHTML="<dt>"+t("version")+"</dt><dd>"+esc(info.version)+"</dd><dt>"+t("ip")+"</dt><dd>"+esc(info.ip)+" · "+esc(info.host)+"</dd><dt>"+t("signal")+"</dt><dd>"+info.rssi+" dBm</dd><dt>"+t("heap")+"</dt><dd>"+Math.round(info.heap/1024)+" kB</dd><dt>"+t("uptime")+"</dt><dd>"+up+"</dd><dt>"+t("lastReset")+"</dt><dd>"+esc(t("rst_"+info.lastReset))+"</dd>";
 }
 async function refreshInfo(){try{info=await (await fetch("/api/info")).json();}catch(e){info={};}if(cfg)renderStatus();}
 async function init(){

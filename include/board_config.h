@@ -78,6 +78,12 @@
 #define LDR_MIN_PERCENT 25
 #endif
 
+// ---- Wi-Fi ---------------------------------------------------------------------------
+// If the log shows "last reset reason: brownout" during HTTPS requests and a
+// better USB cable/charger is not an option, cap the transmit power, e.g.
+//   #define WIFI_TX_POWER WIFI_POWER_15dBm
+// (default: driver maximum, best range).
+
 // ---- Product -------------------------------------------------------------------------
 #define PRODUCT_NAME "Abfahrt"
 #define PRODUCT_HOSTNAME "abfahrt"  // -> http://abfahrt.local

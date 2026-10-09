@@ -30,6 +30,8 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
     return false;
   }
   uint32_t t0 = millis();
+  LOGI("GET %s (heap %u, largest block %u)", url, (unsigned)ESP.getFreeHeap(),
+       (unsigned)ESP.getMaxAllocHeap());
   WiFiClientSecure client;
   client.setInsecure();
   HTTPClient http;
@@ -54,7 +56,8 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
     LOGW("HTTP %d for %s", code, url);
   }
   http.end();
-  LOGI("GET %s -> %d (%lu ms, heap %u)", url, code, (unsigned long)(millis() - t0),
-        (unsigned)ESP.getFreeHeap());
+  LOGI("  -> %d (%lu ms, heap %u, min %u, stack left %u)", code,
+       (unsigned long)(millis() - t0), (unsigned)ESP.getFreeHeap(),
+       (unsigned)ESP.getMinFreeHeap(), (unsigned)uxTaskGetStackHighWaterMark(nullptr));
   return ok;
 }

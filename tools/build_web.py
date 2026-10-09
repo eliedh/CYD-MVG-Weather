@@ -39,7 +39,7 @@ def check_i18n(name, html):
         raise SystemExit(f"build_web: {name}: DE/EN key mismatch: only DE {sorted(de - en)}, "
                          f"only EN {sorted(en - de)}")
     used = set(re.findall(r'data-tp?="([A-Za-z_]+)"', html))
-    used |= set(re.findall(r'\bt\("([A-Za-z_]+)"', html))
+    used |= set(re.findall(r'\bt\("([A-Za-z_]+)"[,)]', html))  # literal keys only
     missing = used - de
     if missing:
         raise SystemExit(f"build_web: {name}: keys used but not translated: {sorted(missing)}")
