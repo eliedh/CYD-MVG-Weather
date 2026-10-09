@@ -29,6 +29,14 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
     lastStatus_ = -1;
     return false;
   }
+  // A TLS handshake needs ~45 kB. If the heap is that low, other tasks'
+  // allocations would fail during it (and abort), so skip this round instead.
+  if (ESP.getFreeHeap() < 70000 || ESP.getMaxAllocHeap() < 32000) {
+    LOGW("low memory (heap %u, largest %u) - skipping %s", (unsigned)ESP.getFreeHeap(),
+         (unsigned)ESP.getMaxAllocHeap(), url);
+    lastStatus_ = -3;
+    return false;
+  }
   uint32_t t0 = millis();
   LOGI("GET %s (heap %u, largest block %u)", url, (unsigned)ESP.getFreeHeap(),
        (unsigned)ESP.getMaxAllocHeap());

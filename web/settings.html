@@ -204,7 +204,7 @@ function dirty(){$("savebar").classList.add("show");}
 async function job(url){
   const r=await (await fetch(url)).json();
   if(!r.job)throw new Error("busy");
-  for(let i=0;i<60;i++){await sleep(i<5?300:600);const s=await (await fetch("/api/job?id="+r.job)).json();if(s.state!="pending")return s;}
+  for(let i=0;i<60;i++){await sleep(i<3?600:900);const s=await (await fetch("/api/job?id="+r.job)).json();if(s.state!="pending")return s;}
   throw new Error("timeout");
 }
 function applyTexts(){

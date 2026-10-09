@@ -30,8 +30,8 @@ void fillFromSnapshot(ViewModel& vm, const core::Settings& s, const core::DataSn
   vm.departuresFetchedAt = d.departuresFetchedAt;
   vm.rowCount = timeValid ? core::buildBoard(d.stops, s, now, vm.rows, kMaxBoardRows) : 0;
 
-  vm.messageCount = d.messageCount;
-  for (int i = 0; i < d.messageCount && i < core::kMaxMessages; i++) vm.messages[i] = d.messages[i];
+  vm.messageCount = d.messageCount < core::kMaxMessages ? d.messageCount : core::kMaxMessages;
+  vm.messages = d.messages;
   if (vm.messageIndex >= vm.messageCount) {
     vm.messageIndex = 0;
     vm.messagePage = 0;

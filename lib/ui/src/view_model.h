@@ -58,7 +58,9 @@ struct ViewModel {
   char stopLabels[core::kMaxStops][25] = {{0}};
 
   // service messages relevant to displayed lines
-  core::ServiceMessage messages[core::kMaxMessages];
+  // Points into the caller's DataSnapshot (no copy - RAM is tight); valid
+  // while that snapshot lives.
+  const core::ServiceMessage* messages = nullptr;
   int messageCount = 0;
   int messageIndex = 0;
   int messagePage = 0;

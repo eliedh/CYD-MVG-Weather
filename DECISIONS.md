@@ -223,6 +223,25 @@ Consequences:
   - held > 30 s → treated as stuck, ignored until released;
   - `monitor_rts = 0`, `monitor_dtr = 0` in `platformio.ini`.
 
+## 9c. Memory (found on the first hardware test)
+
+- The first HTTPS request (stop search) crashed the device: ~84 kB free heap
+  before the TLS handshake (which needs ~45–55 kB); other tasks' `new` then
+  failed and aborted (`operator new` → `std::terminate`) – once in the async
+  web server parsing the page's polling request, once in the UI's per-second
+  `buildBoard()` vector. Fixes:
+  - `buildBoard()` uses a static work buffer and `std::sort` (no heap);
+  - the view model points at the snapshot's messages instead of copying them;
+  - service messages: max 4, text 640 bytes (was 6 × 900);
+  - removed a duplicate 7 kB departure buffer in the net task;
+  - net task stack back to 16 kB, AsyncTCP task stack 16 → 10 kB
+    (`CONFIG_ASYNC_TCP_STACK_SIZE`);
+  - the settings page polls jobs less often;
+  - every HTTPS request is skipped (logged as "low memory") when free heap is
+    below 70 kB or the largest block below 32 kB, instead of risking a crash.
+  The log prints heap/largest block before and heap/min/stack after every
+  request, so the remaining headroom is visible.
+
 ## 10. Known gaps / not done
 
 - No EFA fallback provider (MVG could not be evaluated).

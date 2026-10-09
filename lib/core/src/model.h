@@ -12,7 +12,7 @@ namespace core {
 
 constexpr int kMaxStops = 4;
 constexpr int kMaxDeparturesPerStop = 20;
-constexpr int kMaxMessages = 6;
+constexpr int kMaxMessages = 4;
 constexpr int kMaxHours = 8;
 
 enum class TransportType : uint8_t {
@@ -68,7 +68,7 @@ struct StopInfo {  // a search result
 
 struct ServiceMessage {
   char title[96] = {0};
-  char text[900] = {0};         // tags stripped, whitespace collapsed
+  char text[640] = {0};         // tags stripped, whitespace collapsed
   char lines[48] = {0};         // affected displayed lines, "U3, U6"
   int64_t validFrom = 0, validTo = 0;
 };

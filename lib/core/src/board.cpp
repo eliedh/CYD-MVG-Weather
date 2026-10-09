@@ -29,61 +29,70 @@ static int64_t floorDiv(int64_t a, int64_t b) {
 
 int buildBoard(const StopDepartures* stops, const Settings& s, int64_t now, BoardRow* out,
                int maxRows) {
-  std::vector<BoardRow> rows;
-  rows.reserve(kMaxStops * kMaxDeparturesPerStop);
+  // Static work buffer: called about once per second on the device, and a
+  // ~9 kB heap allocation each time fails when a TLS handshake has taken most
+  // of the heap. Not reentrant - only the UI task builds the board.
+  static BoardRow rows[kMaxStops * kMaxDeparturesPerStop];
+  int n = 0;
   int nStops = std::min((int)s.stops.size(), kMaxStops);
   for (int i = 0; i < nStops; i++) {
     const StopConfig& sc = s.stops[i];
     const StopDepartures& sd = stops[i];
     if (!sd.valid) continue;
-    for (int j = 0; j < sd.count; j++) {
+    for (int j = 0; j < sd.count && j < kMaxDeparturesPerStop; j++) {
       const Departure& d = sd.items[j];
       if (isFilteredOut(sc, d)) continue;
       int64_t until = d.effectiveTime() - now;
       if (until < 0) continue;  // departed already
-      BoardRow r;
+      BoardRow& r = rows[n++];
+      r = BoardRow();
       r.reachable = until >= (int64_t)sc.walkMin * 60;
       r.dep = d;
       r.dep.stopIndex = (uint8_t)i;
       r.secondsUntil = (int32_t)until;
       r.minutes = (int16_t)floorDiv(until, 60);
       r.walkMin = sc.walkMin;
-      rows.push_back(r);
     }
   }
-  std::stable_sort(rows.begin(), rows.end(), [](const BoardRow& a, const BoardRow& b) {
+  // Total order (std::sort needs no extra memory, unlike stable_sort).
+  std::sort(rows, rows + n, [](const BoardRow& a, const BoardRow& b) {
     int64_t ta = a.dep.effectiveTime(), tb = b.dep.effectiveTime();
     if (ta != tb) return ta < tb;
     if (a.dep.stopIndex != b.dep.stopIndex) return a.dep.stopIndex < b.dep.stopIndex;
-    return strcmp(a.dep.label, b.dep.label) < 0;
+    int c = strcmp(a.dep.label, b.dep.label);
+    if (c) return c < 0;
+    c = strcmp(a.dep.destination, b.dep.destination);
+    if (c) return c < 0;
+    return a.dep.plannedTime < b.dep.plannedTime;
   });
-  // Drop exact duplicates (same trip reported twice, e.g. overlapping stops).
-  rows.erase(std::unique(rows.begin(), rows.end(),
-                         [](const BoardRow& a, const BoardRow& b) {
-                           return a.dep.stopIndex == b.dep.stopIndex &&
-                                  a.dep.plannedTime == b.dep.plannedTime &&
-                                  strcmp(a.dep.label, b.dep.label) == 0 &&
-                                  strcmp(a.dep.destination, b.dep.destination) == 0;
-                         }),
-             rows.end());
+  // Drop exact duplicates (same trip reported twice).
+  n = (int)(std::unique(rows, rows + n,
+                        [](const BoardRow& a, const BoardRow& b) {
+                          return a.dep.stopIndex == b.dep.stopIndex &&
+                                 a.dep.plannedTime == b.dep.plannedTime &&
+                                 strcmp(a.dep.label, b.dep.label) == 0 &&
+                                 strcmp(a.dep.destination, b.dep.destination) == 0;
+                        }) -
+            rows);
 
-  // Keep only the last kMaxUnreachableRows unreachable rows (they sort first
-  // per stop; the latest ones are the "just missed" departures worth showing).
+  // Keep only the last kMaxUnreachableRows unreachable rows (the "just
+  // missed" departures closest to still being catchable).
   int unreachable = 0;
-  for (const BoardRow& r : rows)
-    if (!r.reachable) unreachable++;
+  for (int i = 0; i < n; i++)
+    if (!rows[i].reachable) unreachable++;
   int toDrop = unreachable - kMaxUnreachableRows;
   if (toDrop > 0) {
-    rows.erase(std::remove_if(rows.begin(), rows.end(),
-                              [&toDrop](const BoardRow& r) {
-                                if (r.reachable || toDrop <= 0) return false;
-                                toDrop--;
-                                return true;
-                              }),
-               rows.end());
+    n = (int)(std::remove_if(rows, rows + n,
+                             [&toDrop](const BoardRow& r) {
+                               if (r.reachable || toDrop <= 0) return false;
+                               toDrop--;
+                               return true;
+                             }) -
+              rows);
   }
 
-  for (BoardRow& r : rows) {
+  for (int i = 0; i < n; i++) {
+    BoardRow& r = rows[i];
     if (r.dep.cancelled || !r.reachable) continue;
     r.highlight = true;
     if (r.walkMin > 0)
@@ -91,9 +100,9 @@ int buildBoard(const StopDepartures* stops, const Settings& s, int64_t now, Boar
     break;
   }
 
-  int n = std::min((int)rows.size(), maxRows);
-  for (int i = 0; i < n; i++) out[i] = rows[i];
-  return n;
+  int count = std::min(n, maxRows);
+  for (int i = 0; i < count; i++) out[i] = rows[i];
+  return count;
 }
 
 std::vector<LineKey> boardLines(const StopDepartures* stops, const Settings& s) {

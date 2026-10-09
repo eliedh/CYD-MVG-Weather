@@ -9,6 +9,8 @@
 #include <time.h>
 
 #include <algorithm>
+#include <memory>
+#include <new>
 #include <vector>
 
 #include "../app/shared.h"
@@ -58,7 +60,6 @@ std::string slotIds[core::kMaxStops];  // which stop each data slot holds
 // Large temporaries live here, not on the 16 KB task stack.
 core::Settings cfg;
 core::StopDepartures tmpStop;
-core::StopDepartures tmpAll[core::kMaxStops];
 core::ServiceMessage tmpMsgs[core::kMaxMessages];
 core::WeatherData tmpWeather;
 std::string trySsid, tryPass;  // credentials being tested from the portal
@@ -346,8 +347,19 @@ void syncSettings() {
   seenSettingsVersion = v;
   if (changed) {
     // Keep data for stops that survived the edit (matched by id), drop the rest.
+    // Rare (settings change): a temporary heap buffer instead of a permanent
+    // static one. If it cannot be allocated, the data is simply refetched.
+    std::unique_ptr<core::StopDepartures[]> moved(new (std::nothrow)
+                                                      core::StopDepartures[core::kMaxStops]);
     SharedLock l;
-    core::StopDepartures* moved = tmpAll;  // scratch, reused by fetchMessages
+    if (!moved) {
+      for (int i = 0; i < core::kMaxStops; i++) {
+        g.data.stops[i] = core::StopDepartures();
+        slotIds[i] = i < (int)cfg.stops.size() ? cfg.stops[i].id : std::string();
+      }
+      g.data.version++;
+      return;
+    }
     std::string newIds[core::kMaxStops];
     for (int i = 0; i < core::kMaxStops; i++) {
       moved[i] = core::StopDepartures();
@@ -397,9 +409,8 @@ void fetchMessages() {
   std::vector<core::LineKey> lines;
   {
     SharedLock l;
-    for (int i = 0; i < core::kMaxStops; i++) tmpAll[i] = g.data.stops[i];
+    lines = core::boardLines(g.data.stops, cfg);
   }
-  lines = core::boardLines(tmpAll, cfg);
   int count = 0;
   if (lines.empty()) {
     SharedLock l;
@@ -557,7 +568,8 @@ void task(void*) {
 
 }  // namespace
 
-// 20 KB: the TLS handshake (mbedTLS) runs on this task's stack.
-void start() { xTaskCreatePinnedToCore(task, "net", 20480, nullptr, 1, nullptr, 0); }
+// 16 KB: enough for the mbedTLS handshake (measured headroom is logged after
+// every request as "stack left"); the stack comes out of the heap TLS needs.
+void start() { xTaskCreatePinnedToCore(task, "net", 16384, nullptr, 1, nullptr, 0); }
 
 }  // namespace net

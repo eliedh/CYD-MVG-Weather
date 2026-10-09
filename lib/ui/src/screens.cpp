@@ -347,7 +347,7 @@ const MsgLayout& layoutMessage(lgfx::LovyanGFX& g, const ViewModel& vm) {
 }
 
 void drawMessageDetail(Painter& p, const ViewModel& vm) {
-  if (vm.messageCount == 0) return;
+  if (vm.messageCount == 0 || !vm.messages) return;
   const core::ServiceMessage& m = vm.messages[vm.messageIndex % core::kMaxMessages];
   const MsgLayout& L = layoutMessage(p.gfx(), vm);
   int pages = (int)L.pages.size();
@@ -556,7 +556,7 @@ int staleMinutes(const ViewModel& vm) {
   return -1;
 }
 
-bool mainHasBanner(const ViewModel& vm) { return vm.messageCount > 0; }
+bool mainHasBanner(const ViewModel& vm) { return vm.messageCount > 0 && vm.messages; }
 
 int mainVisibleRows(const ViewModel& vm) {
   int top = kHeaderH + 4 + (mainHasBanner(vm) ? kBannerH + 4 : 0);
@@ -584,7 +584,7 @@ HitZone hitTestResetConfirm(int x, int y) {
 }
 
 int messagePageCount(lgfx::LovyanGFX& measure, const ViewModel& vm) {
-  if (vm.messageCount == 0) return 0;
+  if (vm.messageCount == 0 || !vm.messages) return 0;
   return (int)layoutMessage(measure, vm).pages.size();
 }
 
