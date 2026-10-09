@@ -120,14 +120,16 @@ bool EspHttp::doGet(const char* url, Consumer& consume) {
       LOGW("parse failed for %s: %s", url, core::lastParseError());
       LOGW("  read %u bytes%s, Content-Length %d, Transfer-Encoding '%s', Content-Encoding '%s', "
            "Content-Type '%s'",
-           (unsigned)src.total(), src.stalled() ? " (stalled >10 s)" : "", http.getSize(), http.header("Transfer-Encoding").c_str(),
-           http.header("Content-Encoding").c_str(), http.header("Content-Type").c_str());
+           (unsigned)src.total(), src.stalled() ? " (stalled >10 s)" : "", http.getSize(),
+           http.header("Transfer-Encoding").c_str(), http.header("Content-Encoding").c_str(),
+           http.header("Content-Type").c_str());
       LOGW("  last bytes: %s", tail);
+    } else if (src.total() > 20000) {
+      LOGI("  read %u bytes", (unsigned)src.total());
     }
   } else {
     LOGW("HTTP %d for %s", code, url);
   }
-  else if (ok && src.total() > 20000) LOGI("  read %u bytes", (unsigned)src.total());
   http.end();
   LOGI("  -> %d (%lu ms, heap %u, min %u, stack left %u)", code,
        (unsigned long)(millis() - t0), (unsigned)ESP.getFreeHeap(),
