@@ -161,9 +161,12 @@ Consequences:
 - Fetch intervals: departures 45 s (20 s after an error), messages 5 min,
   weather 15 min (2 min after an error); first weather 8 s and first messages
   16 s after the first departures (staggered).
-- Departure requests omit `transportTypes` unless a stop is restricted, and
-  never send `SCHIFF` (unknown whether every API version accepts it);
-  filtering is done locally anyway.
+- Departure requests **always** send `transportTypes` explicitly (in the
+  mvg.de order `UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN`, reduced to the stop's
+  selection). An earlier version omitted it for "all types", and on real
+  hardware buses were missing. `SCHIFF` is never sent (unknown whether every
+  API version accepts it); filtering is also done locally. Each fetch logs the
+  departures per type.
 - `User-Agent: Mozilla/5.0 (compatible; Abfahrt-CYD/1.0)`.
 - Captive-portal detection URLs for Android, Apple, Windows and Firefox
   redirect to `http://192.168.4.1/`; DNS answers every name with the AP IP.

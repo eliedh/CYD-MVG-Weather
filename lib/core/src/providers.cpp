@@ -15,20 +15,23 @@ std::string MvgProvider::searchUrl(const char* query) {
 }
 
 std::string MvgProvider::departuresUrl(const StopConfig& stop, int limit) {
-  // Only send transportTypes when the stop is restricted; the full list is the
-  // API default. SCHIFF is never sent (not every API version accepts it) -
-  // filtering happens locally anyway.
-  std::string types;
-  bool restricted = false;
-  for (int t = 0; t < (int)TransportType::Ship; t++) {
-    if (!(stop.typeMask & (1u << t))) {
-      restricted = true;
-      continue;
-    }
+  // Always send transportTypes explicitly, like mvg.de does
+  // (UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN): without it the API does not
+  // return every type (buses were missing on real hardware). SCHIFF is never
+  // sent (not every API version accepts it); filtering also happens locally.
+  static const TransportType kOrder[] = {TransportType::UBahn, TransportType::Tram,
+                                         TransportType::SBahn, TransportType::Bus,
+                                         TransportType::RegionalBus, TransportType::Train};
+  std::string types, all;
+  for (TransportType t : kOrder) {
+    const char* name = transportTypeToString(t);
+    if (!all.empty()) all += ',';
+    all += name;
+    if (!(stop.typeMask & typeBit(t))) continue;
     if (!types.empty()) types += ',';
-    types += transportTypeToString((TransportType)t);
+    types += name;
   }
-  if (!restricted) types.clear();
+  if (types.empty()) types = all;  // nothing selected -> everything
   char lim[8];
   snprintf(lim, sizeof(lim), "%d", limit);
   std::string url = std::string(kMvgBase) + "/departures?globalId=" + urlEncode(stop.id.c_str()) +

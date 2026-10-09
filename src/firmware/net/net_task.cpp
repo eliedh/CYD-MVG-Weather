@@ -392,6 +392,17 @@ void fetchDepartures() {
                                   tmpStop)) {
       tmpStop.valid = true;
       tmpStop.fetchedAt = ts;
+      // Which types came back, e.g. "Stockdorf: 12 departures (S 8, BUS 4)".
+      int perType[(int)core::TransportType::Count] = {0};
+      for (int j = 0; j < tmpStop.count; j++) perType[(int)tmpStop.items[j].type]++;
+      char summary[96] = "";
+      size_t len = 0;
+      for (int t = 0; t < (int)core::TransportType::Count && len < sizeof(summary) - 20; t++)
+        if (perType[t])
+          len += snprintf(summary + len, sizeof(summary) - len, "%s%s %d", len ? ", " : "",
+                          core::transportTypeToString((core::TransportType)t), perType[t]);
+      LOGI("  %s: %d departures (%s), type mask 0x%02X", cfg.stops[i].name.c_str(),
+           tmpStop.count, summary, cfg.stops[i].typeMask);
       SharedLock l;
       if (slotIds[i] == cfg.stops[i].id) g.data.stops[i] = tmpStop;
       g.data.version++;

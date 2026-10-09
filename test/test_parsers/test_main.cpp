@@ -237,10 +237,16 @@ void test_urls() {
   st.id = "de:09162:500";
   u = MvgProvider::departuresUrl(st, 20);
   TEST_ASSERT_EQUAL_STRING(
-      "https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09162%3A500&limit=20", u.c_str());
+      "https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09162%3A500&limit=20"
+      "&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN",
+      u.c_str());
   st.typeMask = typeBit(TransportType::UBahn) | typeBit(TransportType::Bus);
   u = MvgProvider::departuresUrl(st, 10);
   TEST_ASSERT_NOT_NULL(strstr(u.c_str(), "&transportTypes=UBAHN,BUS"));
+  TEST_ASSERT_NULL(strstr(u.c_str(), "SBAHN"));
+  st.typeMask = typeBit(TransportType::Ship);  // only unsupported types -> all
+  u = MvgProvider::departuresUrl(st, 10);
+  TEST_ASSERT_NOT_NULL(strstr(u.c_str(), "&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN"));
   std::string w = openMeteoUrl(48.1615f, 11.5863f);
   TEST_ASSERT_NOT_NULL(strstr(w.c_str(), "latitude=48.1615&longitude=11.5863"));
   TEST_ASSERT_NOT_NULL(strstr(w.c_str(), "timezone=Europe%2FBerlin"));
