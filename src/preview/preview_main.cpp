@@ -166,6 +166,9 @@ int main(int argc, char** argv) {
   two.lang = Lang::En;
   ui::fillFromSnapshot(vm, two, d2, kNow, true);
   render(renderer, full, vm, "03_main_two_stops_en");
+  vm.boardPage = 1;
+  render(renderer, full, vm, "03b_main_page2_en");
+  vm.boardPage = 0;
   two.lang = Lang::De;
 
   {

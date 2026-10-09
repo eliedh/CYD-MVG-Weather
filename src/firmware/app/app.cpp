@@ -27,6 +27,7 @@ using ui::Screen;
 enum class Overlay : uint8_t { None, Weather, Message, SettingsQR, ResetConfirm };
 
 constexpr uint32_t kDetailTimeoutMs = 30 * 1000;
+constexpr uint32_t kBoardPageTimeoutMs = 20 * 1000;  // back to page 1
 constexpr uint32_t kQrTimeoutMs = 90 * 1000;
 constexpr uint32_t kNightWakeMs = 30 * 1000;
 constexpr uint32_t kResetHoldShowMs = 2000;
@@ -44,6 +45,7 @@ bool timeValid = false;
 
 Overlay overlay = Overlay::None;
 uint32_t overlayDeadline = 0;
+uint32_t boardPageDeadline = 0;
 uint32_t wakeUntil = 0;
 uint32_t lastActivity = 0;
 bool bootHold = false;
@@ -296,6 +298,13 @@ void handleTouch(Screen screen) {
           vm.messagePage = 0;
           openOverlay(Overlay::Message);
           break;
+        case ui::HitZone::Body: {
+          // Tap the list: next page of departures, wrapping back to page 1.
+          int pages = ui::mainPageCount(vm);
+          vm.boardPage = pages > 1 ? (vm.boardPage + 1) % pages : 0;
+          boardPageDeadline = millis() + kBoardPageTimeoutMs;
+          break;
+        }
         default: break;
       }
       break;
@@ -376,6 +385,7 @@ void loop() {
 
   handleBootButton();
   if (overlay != Overlay::None && (int32_t)(now - overlayDeadline) >= 0) overlay = Overlay::None;
+  if (vm.boardPage != 0 && (int32_t)(now - boardPageDeadline) >= 0) vm.boardPage = 0;
 
   Screen screen = bootHold ? Screen::ResetHold : currentScreen();
   handleTouch(screen);
@@ -389,6 +399,7 @@ void loop() {
   int anim = animated ? (int)(now / 450) % 3 : 0;
   uint32_t s = sig({(uint32_t)screen, (uint32_t)epoch, dataVersion, settingsVersion,
                     (uint32_t)anim, (uint32_t)vm.messageIndex, (uint32_t)vm.messagePage,
+                    (uint32_t)vm.boardPage,
                     (uint32_t)vm.wifiDown, (uint32_t)vm.resetSeconds,
                     (uint32_t)vm.resetReleaseToCalibrate, (uint32_t)vm.resetReleaseToErase,
                     (uint32_t)net, (uint32_t)timeValid});

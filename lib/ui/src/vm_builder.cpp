@@ -30,6 +30,7 @@ void fillFromSnapshot(ViewModel& vm, const core::Settings& s, const core::DataSn
   vm.departuresFetchedAt = d.departuresFetchedAt;
   vm.rowCount = timeValid ? core::buildBoard(d.stops, s, now, vm.rows, kMaxBoardRows) : 0;
 
+  // (boardPage is clamped when drawing; the app resets it after a timeout)
   vm.messageCount = d.messageCount < core::kMaxMessages ? d.messageCount : core::kMaxMessages;
   vm.messages = d.messages;
   if (vm.messageIndex >= vm.messageCount) {

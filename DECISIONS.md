@@ -115,6 +115,10 @@ Consequences:
   trains grey. These are approximations from memory, not official values.
 - **Touch**: tap = press < 900 ms with < 40 px movement; long-press = 1 s
   (fires while still pressed). No swipes anywhere.
+- **Departure list paging** (owner request): tapping the list shows the next
+  page, up to 4 pages (first + 3), wrapping back to page 1; page dots in the
+  bottom margin only when there is more than one page; back to page 1 after
+  20 s without a tap. The "leave in" highlight is always on page 1.
 - **Header tap** → hourly forecast; **banner tap** → notice; **long-press
   anywhere** (when online) → settings QR. Detail screens auto-return after
   30 s, settings QR after 90 s.

@@ -222,8 +222,21 @@ void drawMain(Painter& p, const ViewModel& vm) {
     y += kBannerH + 4;
   }
   int visible = mainVisibleRows(vm);
-  int n = vm.rowCount < visible ? vm.rowCount : visible;
-  for (int i = 0; i < n; i++) drawRow(p, vm, vm.rows[i], y + i * kRowH);
+  int pages = mainPageCount(vm);
+  int page = vm.boardPage < pages ? vm.boardPage : pages - 1;
+  int first = page * visible;
+  int n = vm.rowCount - first;
+  if (n > visible) n = visible;
+  if (n < 0) n = 0;
+  for (int i = 0; i < n; i++) drawRow(p, vm, vm.rows[first + i], y + i * kRowH);
+
+  // Page dots in the bottom margin, only when there is more than one page.
+  if (pages > 1) {
+    const int gap = 10, dy = kH - 4;
+    int x0 = kW / 2 - (pages - 1) * gap / 2;
+    for (int i = 0; i < pages; i++)
+      p.fillCircle(x0 + i * gap, dy, i == page ? 3 : 2, i == page ? kText2 : kDivider);
+  }
 
   if (n == 0) {
     int cy = (y + kH) / 2;
@@ -557,6 +570,13 @@ int staleMinutes(const ViewModel& vm) {
 }
 
 bool mainHasBanner(const ViewModel& vm) { return vm.messageCount > 0 && vm.messages; }
+
+int mainPageCount(const ViewModel& vm) {
+  int visible = mainVisibleRows(vm);
+  if (visible <= 0 || vm.rowCount <= visible) return 1;
+  int pages = (vm.rowCount + visible - 1) / visible;
+  return pages > kMaxBoardPages ? kMaxBoardPages : pages;
+}
 
 int mainVisibleRows(const ViewModel& vm) {
   int top = kHeaderH + 4 + (mainHasBanner(vm) ? kBannerH + 4 : 0);

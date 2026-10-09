@@ -32,6 +32,7 @@
 |---|---|---|
 | Oben tippen · Tap the top | Wetter der nächsten Stunden | Weather for the next hours |
 | Gelben Hinweis tippen · Tap the yellow notice | Störungsmeldung lesen | Read the service notice |
+| Liste tippen · Tap the list | weitere Abfahrten (bis 4 Seiten) | more departures (up to 4 pages) |
 | Lange drücken · Press and hold | Adresse der Einstellungen | Address of the settings page |
 | Nachts tippen · Tap at night | Bildschirm 30 s an | Screen on for 30 s |
 | **Grün** · **green** | „in 3 Min. losgehen“ – die nächste erreichbare Abfahrt | “leave in 3 min” – the next one you can catch |

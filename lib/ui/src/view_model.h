@@ -27,7 +27,9 @@ enum class Screen : uint8_t {
   Notice,          // short centred message (saved, restarting, ...)
 };
 
-constexpr int kMaxBoardRows = 8;
+// Up to 4 pages of departures (tap the list to page through).
+constexpr int kMaxBoardPages = 4;
+constexpr int kMaxBoardRows = 5 * kMaxBoardPages;
 
 struct ViewModel {
   Screen screen = Screen::Boot;
@@ -64,6 +66,7 @@ struct ViewModel {
   int messageCount = 0;
   int messageIndex = 0;
   int messagePage = 0;
+  int boardPage = 0;  // departure list page (0 = first)
 
   // misc
   int animPhase = 0;     // increments for the activity dots

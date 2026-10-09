@@ -166,6 +166,7 @@ home network, where stops are chosen.
 |---|---|---|
 | Header (weather, clock) | hourly forecast | settings QR + URL |
 | Notice banner | service notice, tap to page through | settings QR + URL |
+| Departure list | next page (up to 4 pages, dots at the bottom); back to page 1 after 20 s | settings QR + URL |
 | Any detail screen | back (notices: next page, then back) | settings QR + URL |
 | Settings QR screen | *Reset…* button → confirmation screen | – |
 | Reset confirmation | *Cancel* closes | **hold *Erase*** → erase everything |

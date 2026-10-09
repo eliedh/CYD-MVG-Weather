@@ -11,6 +11,7 @@ void drawScreen(Painter& p, const ViewModel& vm);
 // Main screen layout helpers (shared with touch handling).
 bool mainHasBanner(const ViewModel& vm);
 int mainVisibleRows(const ViewModel& vm);
+int mainPageCount(const ViewModel& vm);  // 1..kMaxBoardPages
 
 enum class HitZone : uint8_t { None, Header, Banner, Body, ResetButton, Cancel, Erase };
 HitZone hitTestMain(const ViewModel& vm, int x, int y);
