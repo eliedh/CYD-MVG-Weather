@@ -1,0 +1,71 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: poweron
+[    0.4] setup done, heap 183348
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=119240 min=119156 largest=77812 stack_hw=13784
+[    2.5] online: 192.168.68.85, RSSI -72
+[    2.5] net state 2 -> 4
+[    6.6] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 112144, largest block 69620)
+[ 10762][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   10.8]   -> 200 (4219 ms, heap 108580, min 55812, stack left 10088)
+[   10.8]   Stockdorf: 20 departures (SBAHN 20), type mask 0xC2
+[   10.8] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5647&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 110884, largest block 36852)
+[ 12171][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   12.2]   -> 200 (1405 ms, heap 108424, min 47536, stack left 10088)
+[   12.2]   Gautinger Straße, Stockdorf: 20 departures (REGIONAL_BUS 20), type mask 0xFF
+[   17.1] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5647&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 106740, largest block 36852)
+[ 18292][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   18.3]   -> 200 (1223 ms, heap 107964, min 47536, stack left 9912)
+[   20.2] GET https://api.open-meteo.com/v1/forecast?latitude=48.0929&longitude=11.3999&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FBerlin&timeformat=unixtime&forecast_days=2 (heap 110408, largest block 36852)
+[ 20753][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   20.8]   -> 200 (555 ms, heap 107308, min 47536, stack left 9912)
+[   28.2] GET https://www.mvg.de/api/bgw-pt/v3/messages (heap 110648, largest block 36852)
+[   29.8] WARN parse failed for https://www.mvg.de/api/bgw-pt/v3/messages: element 5: IncompleteInput
+[   29.8]   -> 200 (1556 ms, heap 107496, min 47536, stack left 9912)
+[   30.7] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   35.7] GET https://www.mvg.de/api/bgw-pt/v3/locations?query=Harmplatz&locationTypes=STATION (heap 106504, largest block 36852)
+[ 36820][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   36.8]   -> 200 (1134 ms, heap 107560, min 47536, stack left 9912)
+[   42.0] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5649&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 106152, largest block 36852)
+[ 43608][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   43.6]   -> 200 (1584 ms, heap 106868, min 47536, stack left 9912)
+[   54.8] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 109688, largest block 36852)
+[ 56202][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   56.2]   -> 200 (1428 ms, heap 107172, min 47536, stack left 9912)
+[   56.2]   Stockdorf: 20 departures (SBAHN 20), type mask 0xC2
+[   56.2] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5649&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 109848, largest block 36852)
+[   56.3] settings saved (494 bytes)
+[ 58041][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   58.0]   -> 200 (1833 ms, heap 107008, min 47536, stack left 9912)
+[   58.1]   Harmsplatz, Stockdorf: 5 departures (REGIONAL_BUS 5), type mask 0xFF
+[   58.1] GET https://api.open-meteo.com/v1/forecast?latitude=48.0929&longitude=11.3999&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FBerlin&timeformat=unixtime&forecast_days=2 (heap 109520, largest block 36852)
+[ 59092][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   59.1]   -> 200 (1011 ms, heap 106416, min 47536, stack left 9912)
+[   59.1] GET https://www.mvg.de/api/bgw-pt/v3/messages (heap 109420, largest block 36852)
+[   60.3] WARN parse failed for https://www.mvg.de/api/bgw-pt/v3/messages: element 5: IncompleteInput
+[   60.3]   -> 200 (1182 ms, heap 107020, min 47536, stack left 9912)
+[   60.5] heap free=109684 min=47536 largest=36852 stack_hw=9912
+[   60.8] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   90.8] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[  103.1] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 109536, largest block 36852)
+[104532][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[  104.5]   -> 200 (1463 ms, heap 106740, min 47536, stack left 9912)
+[  104.5]   Stockdorf: 20 departures (SBAHN 20), type mask 0xC2
+[  104.5] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5649&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 109408, largest block 36852)
+[106063][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[  106.1]   -> 200 (1524 ms, heap 106556, min 47536, stack left 9912)
+[  106.1]   Harmsplatz, Stockdorf: 5 departures (REGIONAL_BUS 5), type mask 0xFF

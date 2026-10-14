@@ -1,0 +1,49 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: poweron
+[    0.4] setup done, heap 184040
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=120116 min=119844 largest=81908 stack_hw=13992
+[    2.3] online: 192.168.68.85, RSSI -65
+[    2.3] net state 2 -> 4
+[   15.1] GET https://www.mvg.de/api/bgw-pt/v3/locations?query=Stockdorf&locationTypes=STATION (heap 107708, largest block 65524)
+[ 16272][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   16.3]   -> 200 (1183 ms, heap 107624, min 57832, stack left 9928)
+[   30.6] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   42.1] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20 (heap 106120, largest block 36852)
+[ 43707][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   43.7]   -> 200 (1569 ms, heap 107420, min 56804, stack left 9868)
+[   51.2] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 104980, largest block 36852)
+[   52.7] settings saved (356 bytes)
+[ 52721][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   52.7]   -> 200 (1562 ms, heap 107036, min 56804, stack left 9868)
+[   60.6] heap free=109804 min=56804 largest=36852 stack_hw=9868
+[   60.7] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   60.8] GET https://api.open-meteo.com/v1/forecast?latitude=48.0929&longitude=11.3999&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FBerlin&timeformat=unixtime&forecast_days=2 (heap 109612, largest block 36852)
+[ 61732][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   61.7]   -> 200 (984 ms, heap 106496, min 56764, stack left 9868)
+[   68.8] GET https://www.mvg.de/api/bgw-pt/v3/messages (heap 109884, largest block 36852)
+[   70.4] WARN parse failed for https://www.mvg.de/api/bgw-pt/v3/messages
+[   70.4]   -> 200 (1633 ms, heap 107152, min 52800, stack left 9868)
+[   90.9] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   97.7] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 109852, largest block 36852)
+[ 99710][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   99.7]   -> 200 (1983 ms, heap 107044, min 52800, stack left 9868)
+[  120.6] heap free=109804 min=52800 largest=36852 stack_hw=9868
+[  121.0] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[  144.7] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=SBAHN (heap 110560, largest block 36852)
+[146622][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[  146.6]   -> 200 (1887 ms, heap 107760, min 52800, stack left 9868)

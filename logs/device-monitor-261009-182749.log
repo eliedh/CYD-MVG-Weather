@@ -1,0 +1,129 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: poweron
+[    0.4] setup done, heap 165192
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=94940 min=94856 largest=55284 stack_hw=18088
+[    2.0] online: 192.168.68.85, RSSI -53
+[    2.0] net state 2 -> 4
+[   21.8] GET https://www.mvg.de/api/bgw-pt/v3/locations?query=Stockdorf&locationTypes=STATION (heap 83916, largest block 45044)
+
+abort() was called at PC 0x401993b7 on core 1
+
+
+Backtrace: 0x4008343d:0x3fff1990 0x4008e5c9:0x3fff19b0 0x40094989:0x3fff19d0 0x401993b7:0x3fff1a50 0x401993ec:0x3fff1a70 0x4019a39a:0x3fff1a90 0x4019954d:0x3fff1ab0 0x400e8722:0x3fff1ad0 0x400e9f02:0x3fff1b50 0x400eae06:0x3fff1b90 0x400eaf91:0x3fff1bc0 0x400e5529:0x3fff1be0 0x400e5dfd:0x3fff1c20 0x400e5f23:0x3fff1c40 0x4008f002:0x3fff1c70
+  #0  0x4008343d in panic_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/panic.c:463
+  #1  0x4008e5c9 in esp_system_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/port/esp_system_chip.c:92
+  #2  0x40094989 in abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/newlib/abort.c:38
+  #3  0x401993b7 in __cxxabiv1::__terminate(void (*)()) at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_terminate.cc:48
+  #4  0x401993ec in std::terminate() at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_terminate.cc:58 (discriminator 1)
+  #5  0x4019a39a in __cxa_allocate_exception at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_alloc.cc:412
+  #6  0x4019954d in operator new(unsigned int) at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/new_op.cc:54
+  #7  0x400e8722 in std::__new_allocator<std::_List_node<AsyncWebHeader> >::allocate(unsigned int, void const*) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/new_allocator.h:147
+      (inlined by) std::allocator_traits<std::allocator<std::_List_node<AsyncWebHeader> > >::allocate(std::allocator<std::_List_node<AsyncWebHeader> >&, unsigned int) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/alloc_traits.h:482
+      (inlined by) std::__cxx11::_List_base<AsyncWebHeader, std::allocator<AsyncWebHeader> >::_M_get_node() at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/stl_list.h:518
+      (inlined by) std::_List_node<AsyncWebHeader>* std::__cxx11::list<AsyncWebHeader, std::allocator<AsyncWebHeader> >::_M_create_node<AsyncWebHeader>(AsyncWebHeader&&) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/stl_list.h:710
+      (inlined by) void std::__cxx11::list<AsyncWebHeader, std::allocator<AsyncWebHeader> >::_M_insert<AsyncWebHeader>(std::_List_iterator<AsyncWebHeader>, AsyncWebHeader&&) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/stl_list.h:2005
+      (inlined by) AsyncWebHeader& std::__cxx11::list<AsyncWebHeader, std::allocator<AsyncWebHeader> >::emplace_back<AsyncWebHeader>(AsyncWebHeader&&) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/stl_list.h:1321
+      (inlined by) AsyncWebServerRequest::_parseReqHeader() at .pio/libdeps/cyd_st7789/ESPAsyncWebServer/src/WebRequest.cpp:708
+  #8  0x400e9f02 in AsyncWebServerRequest::_parseLine() at .pio/libdeps/cyd_st7789/ESPAsyncWebServer/src/WebRequest.cpp:1027
+  #9  0x400eae06 in AsyncWebServerRequest::_onData(void*, unsigned int) at .pio/libdeps/cyd_st7789/ESPAsyncWebServer/src/WebRequest.cpp:167
+  #10 0x400eaf91 in std::_Function_handler<void (void*, AsyncClient*, void*, unsigned int), AsyncWebServerRequest::AsyncWebServerRequest(AsyncWebServer*, AsyncClient*)::{lambda(void*, AsyncClient*, void*, unsigned int)#1}>::_M_invoke(std::_Any_data const&, void*&&, AsyncClient*&&, void*&&, unsigned int&&) at .pio/libdeps/cyd_st7789/ESPAsyncWebServer/src/WebRequest.cpp:81
+      (inlined by) __invoke_impl<void, AsyncWebServerRequest::AsyncWebServerRequest(AsyncWebServer*, AsyncClient*)::<lambda(void*, AsyncClient*, void*, size_t)>&, void*, AsyncClient*, void*, unsigned int> at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/invoke.h:61
+      (inlined by) __invoke_r<void, AsyncWebServerRequest::AsyncWebServerRequest(AsyncWebServer*, AsyncClient*)::<lambda(void*, AsyncClient*, void*, size_t)>&, void*, AsyncClient*, void*, unsigned int> at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/invoke.h:111
+      (inlined by) _M_invoke at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/std_function.h:290
+  #11 0x400e5529 in std::function<void (void*, AsyncClient*, void*, unsigned int)>::operator()(void*, AsyncClient*, void*, unsigned int) const at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/std_function.h:591
+      (inlined by) AsyncClient::_recv(tcp_pcb*, pbuf*, signed char) at .pio/libdeps/cyd_st7789/AsyncTCP/src/AsyncTCP.cpp:1093
+  #12 0x400e5dfd in AsyncTCP_detail::handle_async_event(lwip_tcp_event_packet_t*) at .pio/libdeps/cyd_st7789/AsyncTCP/src/AsyncTCP.cpp:304
+  #13 0x400e5f23 in _async_service_task(void*) at .pio/libdeps/cyd_st7789/AsyncTCP/src/AsyncTCP.cpp:340 (discriminator 1)
+  #14 0x4008f002 in vPortTaskWrapper at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:139
+
+
+
+
+
+ELF file SHA256: b9e7eb4bf
+
+Rebooting...
+ets Jul 29 2019 12:21:46
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: panic
+[    0.4] setup done, heap 165192
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=95128 min=94856 largest=55284 stack_hw=18088
+[    2.6] online: 192.168.68.85, RSSI -60
+[    2.6] net state 2 -> 4
+[    9.6] GET https://www.mvg.de/api/bgw-pt/v3/locations?query=Stockdorf&locationTypes=STATION (heap 83316, largest block 42996)
+
+abort() was called at PC 0x401993b7 on core 1
+
+
+Backtrace: 0x4008343d:0x3ffb1f30 0x4008e5c9:0x3ffb1f50 0x40094989:0x3ffb1f70 0x401993b7:0x3ffb1ff0 0x401993ec:0x3ffb2010 0x401994c7:0x3ffb2030 0x4019955e:0x3ffb2050 0x400ee945:0x3ffb2070 0x400f735a:0x3ffb2140 0x400dc732:0x3ffb2180 0x400dd94f:0x3ffb2250 0x40104eac:0x3ffb2270 0x4008f002:0x3ffb2290
+  #0  0x4008343d in panic_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/panic.c:463
+  #1  0x4008e5c9 in esp_system_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/port/esp_system_chip.c:92
+  #2  0x40094989 in abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/newlib/abort.c:38
+  #3  0x401993b7 in __cxxabiv1::__terminate(void (*)()) at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_terminate.cc:48
+  #4  0x401993ec in std::terminate() at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_terminate.cc:58 (discriminator 1)
+  #5  0x401994c7 in __cxa_throw at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/eh_throw.cc:98
+  #6  0x4019955e in operator new(unsigned int) at /Users/brnomac003/.gitlab-runner/builds/qR2TxTby/0/idf/crosstool-NG/.build/xtensa-esp-elf/src/gcc/libstdc++-v3/libsupc++/new_op.cc:54 (discriminator 2)
+  #7  0x400ee945 in core::buildBoard(core::StopDepartures const*, core::Settings const&, long long, core::BoardRow*, int) at /Users/eliedh/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/bits/new_allocator.h:147
+  #8  0x400f735a in ui::fillFromSnapshot(ui::ViewModel&, core::Settings const&, core::DataSnapshot const&, long long, bool) at lib/ui/src/vm_builder.cpp:31 (discriminator 1)
+  #9  0x400dc732 in app::loop() at src/firmware/app/app.cpp:397
+  #10 0x400dd94f in loop() at src/firmware/main.cpp:11
+  #11 0x40104eac in loopTask(void*) at /Users/eliedh/.platformio/packages/framework-arduinoespressif32@src-702d0f93023d86e22d8ef62aa333f0b7/cores/esp32/main.cpp:74
+  #12 0x4008f002 in vPortTaskWrapper at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:139
+
+
+
+
+
+ELF file SHA256: b9e7eb4bf
+
+Rebooting...
+ets Jul 29 2019 12:21:46
+
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: panic
+[    0.4] setup done, heap 165192
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=94940 min=94856 largest=55284 stack_hw=18088
+[    2.1] online: 192.168.68.85, RSSI -70
+[    2.1] net state 2 -> 4

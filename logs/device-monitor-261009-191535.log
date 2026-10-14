@@ -1,0 +1,69 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4688
+load:0x40078000,len:15504
+load:0x40080400,len:4
+load:0x40080404,len:3196
+entry 0x400805a4
+[    0.1] Abfahrt 1.0.0 starting (panel ST7789, invert 0)
+[    0.1] last reset reason: poweron
+[    0.4] setup done, heap 183480
+[    0.4] WARN BOOT/GPIO0 reads LOW - ignored until released (serial monitor DTR/RTS?)
+[    0.4] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[    0.5] web server started
+[    0.5] net state 0 -> 2
+[    0.5] heap free=119360 min=119276 largest=77812 stack_hw=13992
+[    2.5] online: 192.168.68.85, RSSI -52
+[    2.5] net state 2 -> 4
+[    6.2] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 112572, largest block 73716)
+[  7597][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[    7.6]   -> 200 (1418 ms, heap 108900, min 60700, stack left 9336)
+[    7.6]   Stockdorf: 20 departures (SBAHN 20), type mask 0xFF
+[   15.6] GET https://api.open-meteo.com/v1/forecast?latitude=48.0929&longitude=11.3999&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FBerlin&timeformat=unixtime&forecast_days=2 (heap 111924, largest block 36852)
+[ 18000][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   18.0]   -> 200 (2389 ms, heap 108292, min 54284, stack left 9336)
+[   23.6] GET https://www.mvg.de/api/bgw-pt/v3/messages (heap 112188, largest block 36852)
+[   27.3]   read 389707 bytes
+[ 27326][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   27.3]   -> 200 (3706 ms, heap 109136, min 54284, stack left 9336)
+[   30.6] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   52.6] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 111812, largest block 36852)
+[ 54086][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   54.1]   -> 200 (1469 ms, heap 108664, min 54284, stack left 9288)
+[   54.1]   Stockdorf: 20 departures (SBAHN 20), type mask 0xFF
+[   60.5] heap free=112096 min=54284 largest=36852 stack_hw=9288
+[   60.8] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[   70.4] GET https://www.mvg.de/api/bgw-pt/v3/locations?query=Odeonplatz&locationTypes=STATION (heap 107756, largest block 36852)
+[ 71427][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   71.4]   -> 200 (1047 ms, heap 108764, min 54284, stack left 9084)
+[   74.8] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 110940, largest block 36852)
+[ 76225][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   76.2]   -> 200 (1396 ms, heap 104740, min 54276, stack left 9084)
+[   76.2]   Stockdorf: 20 departures (SBAHN 20), type mask 0xFF
+[   76.2] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09162%3A60&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 106184, largest block 36852)
+[   76.3] settings saved (484 bytes)
+[ 78098][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   78.1]   -> 200 (1864 ms, heap 108048, min 54276, stack left 9084)
+[   78.1]   Odeonsplatz: 20 departures (UBAHN 14, BUS 6), type mask 0xFF
+[   78.1] GET https://api.open-meteo.com/v1/forecast?latitude=48.0929&longitude=11.3999&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=Europe%2FBerlin&timeformat=unixtime&forecast_days=2 (heap 111036, largest block 36852)
+[ 78693][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   78.7]   -> 200 (559 ms, heap 107644, min 54276, stack left 9084)
+[   78.7] GET https://www.mvg.de/api/bgw-pt/v3/messages (heap 110876, largest block 36852)
+[   82.7]   read 389707 bytes
+[ 82676][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[   82.7]   -> 200 (3981 ms, heap 108572, min 52812, stack left 9084)
+[   91.1] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[  120.5] heap free=109472 min=52812 largest=36852 stack_hw=9084
+[  121.1] LDR raw=0 avg=0 -> backlight 204 (thresholds bright<=40 dark>=600)
+[  123.1] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09188%3A5420&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 109236, largest block 36852)
+[124638][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[  124.6]   -> 200 (1507 ms, heap 106116, min 52812, stack left 9084)
+[  124.6]   Stockdorf: 20 departures (SBAHN 20), type mask 0xFF
+[  124.7] GET https://www.mvg.de/api/bgw-pt/v3/departures?globalId=de%3A09162%3A60&limit=20&transportTypes=UBAHN,TRAM,SBAHN,BUS,REGIONAL_BUS,BAHN (heap 109236, largest block 36852)
+[126079][E][NetworkClient.cpp:323] setSocketOption(): fail on 0, errno: 9, "Bad file number"
+[  126.1]   -> 200 (1435 ms, heap 106472, min 52812, stack left 9084)
+[  126.1]   Odeonsplatz: 20 departures (UBAHN 14, BUS 6), type mask 0xFF
